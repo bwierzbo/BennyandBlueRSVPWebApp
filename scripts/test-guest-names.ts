@@ -32,7 +32,7 @@ function createMockCreateData(guestNames?: string[]): RSVPCreateData {
     email: 'jane@example.com',
     isAttending: true,
     numberOfGuests: guestNames ? guestNames.length : 1,
-    guestNames,
+    guestNames: guestNames || [],
     notes: 'Test create data'
   };
 }

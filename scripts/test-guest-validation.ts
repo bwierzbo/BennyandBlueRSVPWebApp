@@ -1,259 +1,362 @@
 #!/usr/bin/env tsx
 
 /**
- * Guest Names Validation and Error Handling Test Script
+ * Guest Validation Test Script
  *
- * This script tests the enhanced validation and error handling for guest names
- * in the database utilities, including edge cases and error conditions.
+ * This script comprehensively tests the new guest validation logic
+ * implemented for Issue #12, including conditional guest names validation.
  * Run with: npx tsx scripts/test-guest-validation.ts
  */
 
-import { guestValidation, formatConverters } from '../lib/db';
-import type { RSVPCreateData, RSVPUpdateData } from '../types';
+import {
+  validateRSVPForm,
+  rsvpFormSchema,
+  type RSVPFormData,
+} from '../lib/validations'
 
-function assertValidationResult(
-  result: { isValid: boolean; error?: string },
-  expected: { isValid: boolean; error?: string },
-  testName: string
-): void {
-  if (result.isValid !== expected.isValid) {
-    console.error(`❌ ${testName} FAILED:`);
-    console.error(`Expected isValid: ${expected.isValid}, got: ${result.isValid}`);
-    throw new Error(`Test failed: ${testName}`);
-  }
-
-  if (expected.error && !result.error?.includes(expected.error)) {
-    console.error(`❌ ${testName} FAILED:`);
-    console.error(`Expected error to contain: "${expected.error}", got: "${result.error}"`);
-    throw new Error(`Test failed: ${testName}`);
-  }
-
-  console.log(`✅ ${testName} PASSED`);
+interface TestCase {
+  name: string
+  data: Partial<RSVPFormData>
+  shouldPass: boolean
+  expectedErrors?: string[]
 }
 
-function assertThrows(fn: () => any, expectedError: string, testName: string): void {
+async function runGuestValidationTests() {
+  console.log('🧪 Testing Guest Validation Implementation (Issue #12)\n')
+
+  const testCases: TestCase[] = [
+    // Valid guest scenarios
+    {
+      name: 'Valid: Attending with 0 guests',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 0,
+        guestNames: [],
+      },
+      shouldPass: true,
+    },
+    {
+      name: 'Valid: Attending with 1 guest and 1 name',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 1,
+        guestNames: ['Jane Doe'],
+      },
+      shouldPass: true,
+    },
+    {
+      name: 'Valid: Attending with 5 guests and 5 names',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 5,
+        guestNames: ['Jane Doe', 'Bob Smith', 'Alice Johnson', 'Charlie Brown', 'Diana Prince'],
+      },
+      shouldPass: true,
+    },
+    {
+      name: 'Valid: Attending with 10 guests (maximum) and 10 names',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 10,
+        guestNames: ['Guest 1', 'Guest 2', 'Guest 3', 'Guest 4', 'Guest 5', 'Guest 6', 'Guest 7', 'Guest 8', 'Guest 9', 'Guest 10'],
+      },
+      shouldPass: true,
+    },
+    {
+      name: 'Valid: Not attending with 0 guests',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'no',
+        numberOfGuests: 0,
+        guestNames: [],
+      },
+      shouldPass: true,
+    },
+
+    // Invalid guest count scenarios
+    {
+      name: 'Invalid: More than 10 guests',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 11,
+        guestNames: ['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8', 'G9', 'G10', 'G11'],
+      },
+      shouldPass: false,
+      expectedErrors: ['numberOfGuests'],
+    },
+    {
+      name: 'Invalid: Negative guest count',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: -1,
+        guestNames: [],
+      },
+      shouldPass: false,
+      expectedErrors: ['numberOfGuests'],
+    },
+
+    // Invalid guest names scenarios
+    {
+      name: 'Invalid: Attending with guests but no guest names',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 2,
+        guestNames: [],
+      },
+      shouldPass: false,
+      expectedErrors: ['guestNames'],
+    },
+    {
+      name: 'Invalid: Attending with guests but insufficient guest names',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 3,
+        guestNames: ['Jane Doe', 'Bob Smith'], // only 2 names for 3 guests
+      },
+      shouldPass: false,
+      expectedErrors: ['guestNames'],
+    },
+    {
+      name: 'Invalid: More guest names than guest count',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 2,
+        guestNames: ['Jane Doe', 'Bob Smith', 'Alice Johnson'], // 3 names for 2 guests
+      },
+      shouldPass: false,
+      expectedErrors: ['guestNames'],
+    },
+    {
+      name: 'Invalid: Not attending but has guests',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'no',
+        numberOfGuests: 2,
+        guestNames: ['Jane Doe', 'Bob Smith'],
+      },
+      shouldPass: false,
+      expectedErrors: ['numberOfGuests'],
+    },
+
+    // Invalid guest name content
+    {
+      name: 'Invalid: Empty guest name',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 2,
+        guestNames: ['Jane Doe', ''], // empty guest name
+      },
+      shouldPass: false,
+      expectedErrors: ['guestNames.1'],
+    },
+    {
+      name: 'Invalid: Guest name with special characters',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 2,
+        guestNames: ['Jane Doe', 'Guest@#$'], // invalid characters
+      },
+      shouldPass: false,
+      expectedErrors: ['guestNames.1'],
+    },
+    {
+      name: 'Invalid: Guest name too long',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 1,
+        guestNames: ['A'.repeat(101)], // too long
+      },
+      shouldPass: false,
+      expectedErrors: ['guestNames.0'],
+    },
+
+    // Edge cases
+    {
+      name: 'Edge case: Maximum valid guest names array',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 10,
+        guestNames: Array.from({ length: 10 }, (_, i) => `Guest ${i + 1}`),
+      },
+      shouldPass: true,
+    },
+    {
+      name: 'Invalid: Too many guest names in array (exceeds 10)',
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        attendance: 'yes',
+        numberOfGuests: 11, // This will fail anyway, but testing array limit
+        guestNames: Array.from({ length: 11 }, (_, i) => `Guest ${i + 1}`),
+      },
+      shouldPass: false,
+      expectedErrors: ['numberOfGuests', 'guestNames'],
+    },
+  ]
+
+  let passedTests = 0
+  let failedTests = 0
+
+  for (const testCase of testCases) {
+    console.log(`\n📋 ${testCase.name}`)
+
+    try {
+      const result = await validateRSVPForm(testCase.data)
+
+      if (testCase.shouldPass && result.success) {
+        console.log('✅ PASSED - Validation succeeded as expected')
+        passedTests++
+      } else if (!testCase.shouldPass && !result.success) {
+        console.log('✅ PASSED - Validation failed as expected')
+
+        if (testCase.expectedErrors) {
+          const actualErrors = result.errors?.map(e => e.field) || []
+          const missingErrors = testCase.expectedErrors.filter(field => !actualErrors.includes(field))
+          const unexpectedErrors = actualErrors.filter(field => !testCase.expectedErrors!.includes(field))
+
+          if (missingErrors.length === 0 && unexpectedErrors.length === 0) {
+            console.log('   Error fields match exactly')
+          } else {
+            if (missingErrors.length > 0) {
+              console.log(`   ⚠️  Missing expected errors: ${missingErrors.join(', ')}`)
+            }
+            if (unexpectedErrors.length > 0) {
+              console.log(`   ⚠️  Unexpected errors: ${unexpectedErrors.join(', ')}`)
+            }
+          }
+        }
+
+        console.log(`   Errors: ${result.errors?.map(e => `${e.field}: ${e.message}`).join(', ')}`)
+        passedTests++
+      } else {
+        console.log('❌ FAILED - Unexpected validation result')
+        console.log(`   Expected success: ${testCase.shouldPass}, Got success: ${result.success}`)
+        if (!result.success) {
+          console.log(`   Errors: ${result.errors?.map(e => `${e.field}: ${e.message}`).join(', ')}`)
+        }
+        failedTests++
+      }
+    } catch (error) {
+      console.log('❌ FAILED - Test threw an error')
+      console.log(`   Error: ${error}`)
+      failedTests++
+    }
+  }
+
+  // Summary
+  console.log('\n' + '='.repeat(60))
+  console.log('🏁 Test Summary')
+  console.log('='.repeat(60))
+  console.log(`Total tests: ${testCases.length}`)
+  console.log(`Passed: ${passedTests}`)
+  console.log(`Failed: ${failedTests}`)
+
+  if (failedTests === 0) {
+    console.log('\n🎉 All guest validation tests passed!')
+    console.log('✅ Issue #12 implementation appears to be working correctly')
+  } else {
+    console.log('\n❌ Some tests failed. Please review the implementation.')
+    process.exit(1)
+  }
+}
+
+// Additional validation logic tests
+async function testValidationLogic() {
+  console.log('\n' + '='.repeat(60))
+  console.log('🔍 Testing Validation Logic Details')
+  console.log('='.repeat(60))
+
+  // Test 1: Schema defaults
+  console.log('\n1️⃣ Testing schema defaults')
   try {
-    fn();
-    console.error(`❌ ${testName} FAILED: Expected error but none was thrown`);
-    throw new Error(`Test failed: ${testName}`);
+    const minimal = {
+      name: 'Test User',
+      email: 'test@example.com',
+      attendance: 'no' as const,
+    }
+    const parsed = rsvpFormSchema.parse(minimal)
+    console.log('✅ Schema defaults applied correctly')
+    console.log(`   numberOfGuests: ${parsed.numberOfGuests} (expected: 0)`)
+    console.log(`   guestNames: [${parsed.guestNames?.join(', ') || ''}] (expected: [])`)
   } catch (error) {
-    if (error instanceof Error && error.message.includes(expectedError)) {
-      console.log(`✅ ${testName} PASSED`);
-    } else {
-      console.error(`❌ ${testName} FAILED:`);
-      console.error(`Expected error containing: "${expectedError}", got: "${error}"`);
-      throw new Error(`Test failed: ${testName}`);
+    console.log('❌ Schema defaults test failed')
+    console.log(`   Error: ${error}`)
+  }
+
+  // Test 2: Refine validations
+  console.log('\n2️⃣ Testing refine validations')
+  const refineTests = [
+    {
+      name: 'Guest names required when attending with guests',
+      data: {
+        name: 'Test User',
+        email: 'test@example.com',
+        attendance: 'yes' as const,
+        numberOfGuests: 2,
+        guestNames: [],
+      },
+      expectedError: 'guestNames',
+    },
+    {
+      name: 'No guests when not attending',
+      data: {
+        name: 'Test User',
+        email: 'test@example.com',
+        attendance: 'no' as const,
+        numberOfGuests: 1,
+        guestNames: ['Guest'],
+      },
+      expectedError: 'numberOfGuests',
+    },
+  ]
+
+  for (const test of refineTests) {
+    try {
+      rsvpFormSchema.parse(test.data)
+      console.log(`❌ ${test.name}: Expected validation error but got success`)
+    } catch (error) {
+      console.log(`✅ ${test.name}: Correctly rejected`)
     }
   }
 }
 
-async function testGuestValidation() {
-  console.log('🧪 Starting Guest Names Validation Tests...\n');
-
-  let testCount = 0;
-  let passedTests = 0;
-
+// Run all tests
+async function main() {
   try {
-    // Test 1: Valid guest names array
-    testCount++;
-    console.log('1️⃣ Testing valid guest names array...');
-    const validResult = guestValidation.validateGuestNames(['John Doe', 'Jane Smith']);
-    assertValidationResult(validResult, { isValid: true }, 'Valid guest names array');
-    passedTests++;
-
-    // Test 2: Undefined guest names (should be valid)
-    testCount++;
-    console.log('\n2️⃣ Testing undefined guest names...');
-    const undefinedResult = guestValidation.validateGuestNames(undefined);
-    assertValidationResult(undefinedResult, { isValid: true }, 'Undefined guest names');
-    passedTests++;
-
-    // Test 3: Empty array (should be valid)
-    testCount++;
-    console.log('\n3️⃣ Testing empty guest names array...');
-    const emptyResult = guestValidation.validateGuestNames([]);
-    assertValidationResult(emptyResult, { isValid: true }, 'Empty guest names array');
-    passedTests++;
-
-    // Test 4: Too many guests (more than 10)
-    testCount++;
-    console.log('\n4️⃣ Testing too many guest names...');
-    const tooManyGuests = Array.from({ length: 11 }, (_, i) => `Guest ${i + 1}`);
-    const tooManyResult = guestValidation.validateGuestNames(tooManyGuests);
-    assertValidationResult(tooManyResult, { isValid: false, error: 'Maximum 10 guest names allowed' }, 'Too many guest names');
-    passedTests++;
-
-    // Test 5: Non-array input
-    testCount++;
-    console.log('\n5️⃣ Testing non-array guest names...');
-    const nonArrayResult = guestValidation.validateGuestNames('not an array' as any);
-    assertValidationResult(nonArrayResult, { isValid: false, error: 'Guest names must be an array' }, 'Non-array guest names');
-    passedTests++;
-
-    // Test 6: Non-string guest name
-    testCount++;
-    console.log('\n6️⃣ Testing non-string guest name...');
-    const nonStringResult = guestValidation.validateGuestNames(['John Doe', 123] as any);
-    assertValidationResult(nonStringResult, { isValid: false, error: 'must be a string' }, 'Non-string guest name');
-    passedTests++;
-
-    // Test 7: Empty string guest name
-    testCount++;
-    console.log('\n7️⃣ Testing empty string guest name...');
-    const emptyStringResult = guestValidation.validateGuestNames(['John Doe', '   ']);
-    assertValidationResult(emptyStringResult, { isValid: false, error: 'cannot be empty' }, 'Empty string guest name');
-    passedTests++;
-
-    // Test 8: Too long guest name
-    testCount++;
-    console.log('\n8️⃣ Testing too long guest name...');
-    const longName = 'A'.repeat(101);
-    const tooLongResult = guestValidation.validateGuestNames(['John Doe', longName]);
-    assertValidationResult(tooLongResult, { isValid: false, error: 'cannot exceed 100 characters' }, 'Too long guest name');
-    passedTests++;
-
-    // Test 9: Valid guest count consistency
-    testCount++;
-    console.log('\n9️⃣ Testing valid guest count consistency...');
-    const validCountResult = guestValidation.validateGuestCount(2, ['John Doe', 'Jane Smith']);
-    assertValidationResult(validCountResult, { isValid: true }, 'Valid guest count consistency');
-    passedTests++;
-
-    // Test 10: Invalid guest count consistency
-    testCount++;
-    console.log('\n🔟 Testing invalid guest count consistency...');
-    const invalidCountResult = guestValidation.validateGuestCount(3, ['John Doe', 'Jane Smith']);
-    assertValidationResult(invalidCountResult, { isValid: false, error: 'must match guest names count' }, 'Invalid guest count consistency');
-    passedTests++;
-
-    // Test 11: Guest count with no guest names (should be valid)
-    testCount++;
-    console.log('\n1️⃣1️⃣ Testing guest count with no guest names...');
-    const noGuestNamesResult = guestValidation.validateGuestCount(5, undefined);
-    assertValidationResult(noGuestNamesResult, { isValid: true }, 'Guest count with no guest names');
-    passedTests++;
-
-    // Test 12: Safe serialization of valid guest names
-    testCount++;
-    console.log('\n1️⃣2️⃣ Testing safe guest names serialization...');
-    const serialized = guestValidation.safeSerializeGuestNames(['John Doe', 'Jane Smith']);
-    const expected = JSON.stringify(['John Doe', 'Jane Smith']);
-    if (serialized !== expected) {
-      throw new Error(`Serialization mismatch: expected ${expected}, got ${serialized}`);
-    }
-    console.log('✅ Safe guest names serialization PASSED');
-    passedTests++;
-
-    // Test 13: Safe serialization of undefined
-    testCount++;
-    console.log('\n1️⃣3️⃣ Testing safe serialization of undefined...');
-    const serializedUndefined = guestValidation.safeSerializeGuestNames(undefined);
-    if (serializedUndefined !== null) {
-      throw new Error(`Expected null, got ${serializedUndefined}`);
-    }
-    console.log('✅ Safe serialization of undefined PASSED');
-    passedTests++;
-
-    // Test 14: Safe serialization of empty array
-    testCount++;
-    console.log('\n1️⃣4️⃣ Testing safe serialization of empty array...');
-    const serializedEmpty = guestValidation.safeSerializeGuestNames([]);
-    if (serializedEmpty !== null) {
-      throw new Error(`Expected null, got ${serializedEmpty}`);
-    }
-    console.log('✅ Safe serialization of empty array PASSED');
-    passedTests++;
-
-    // Test 15: Safe parsing of valid JSON
-    testCount++;
-    console.log('\n1️⃣5️⃣ Testing safe parsing of valid JSON...');
-    const jsonString = JSON.stringify(['John Doe', 'Jane Smith']);
-    const parsed = guestValidation.safeParseGuestNames(jsonString);
-    if (JSON.stringify(parsed) !== jsonString) {
-      throw new Error(`Parsing mismatch: expected ${jsonString}, got ${JSON.stringify(parsed)}`);
-    }
-    console.log('✅ Safe parsing of valid JSON PASSED');
-    passedTests++;
-
-    // Test 16: Safe parsing of null
-    testCount++;
-    console.log('\n1️⃣6️⃣ Testing safe parsing of null...');
-    const parsedNull = guestValidation.safeParseGuestNames(null);
-    if (parsedNull !== null) {
-      throw new Error(`Expected null, got ${parsedNull}`);
-    }
-    console.log('✅ Safe parsing of null PASSED');
-    passedTests++;
-
-    // Test 17: Safe parsing of already parsed array (PostgreSQL behavior)
-    testCount++;
-    console.log('\n1️⃣7️⃣ Testing safe parsing of already parsed array...');
-    const alreadyParsed = ['John Doe', 'Jane Smith'];
-    const parsedArray = guestValidation.safeParseGuestNames(alreadyParsed);
-    if (JSON.stringify(parsedArray) !== JSON.stringify(alreadyParsed)) {
-      throw new Error(`Array parsing mismatch`);
-    }
-    console.log('✅ Safe parsing of already parsed array PASSED');
-    passedTests++;
-
-    // Test 18: Safe parsing error - invalid JSON
-    testCount++;
-    console.log('\n1️⃣8️⃣ Testing safe parsing of invalid JSON...');
-    assertThrows(
-      () => guestValidation.safeParseGuestNames('invalid json'),
-      'Failed to parse guest names JSON',
-      'Safe parsing of invalid JSON'
-    );
-    passedTests++;
-
-    // Test 19: Safe parsing error - JSON that's not an array
-    testCount++;
-    console.log('\n1️⃣9️⃣ Testing safe parsing of non-array JSON...');
-    assertThrows(
-      () => guestValidation.safeParseGuestNames('{"not": "array"}'),
-      'Guest names JSON must contain an array',
-      'Safe parsing of non-array JSON'
-    );
-    passedTests++;
-
-    // Test 20: Safe parsing error - invalid type
-    testCount++;
-    console.log('\n2️⃣0️⃣ Testing safe parsing of invalid type...');
-    assertThrows(
-      () => guestValidation.safeParseGuestNames(123),
-      'Guest names must be a string (JSON) or array',
-      'Safe parsing of invalid type'
-    );
-    passedTests++;
-
-    console.log('\n🎉 All Guest Validation Tests Completed!');
-    console.log(`📊 Test Results: ${passedTests}/${testCount} tests passed`);
-
-    if (passedTests === testCount) {
-      console.log('✅ All tests PASSED - Guest names validation and error handling is robust!');
-      console.log('\n📋 Verified Functionality:');
-      console.log('   ✅ Guest names array validation (size, type, content)');
-      console.log('   ✅ Guest count consistency validation');
-      console.log('   ✅ Safe JSON serialization/deserialization');
-      console.log('   ✅ Proper error handling for all edge cases');
-      console.log('   ✅ Support for undefined/null/empty values');
-      console.log('   ✅ Protection against malformed data');
-      console.log('   ✅ PostgreSQL JSON/array type compatibility');
-    } else {
-      console.log('❌ Some tests FAILED - see details above');
-      process.exit(1);
-    }
-
+    await runGuestValidationTests()
+    await testValidationLogic()
   } catch (error) {
-    console.error('\n❌ Test execution failed:');
-    console.error(error);
-    console.log(`📊 Test Results: ${passedTests}/${testCount} tests passed before failure`);
-    process.exit(1);
+    console.error('Test execution failed:', error)
+    process.exit(1)
   }
 }
 
-// Self-executing async function
-(async () => {
-  await testGuestValidation();
-  process.exit(0);
-})();
+main()

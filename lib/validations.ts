@@ -18,18 +18,30 @@ const attendanceSchema = z.enum(["yes", "no"], {
   invalid_type_error: "Attendance must be 'yes' or 'no'",
 });
 
-// RSVP Form Schema
+// Guest name validation schema
+const guestNameSchema = z
+  .string()
+  .min(1, "Guest name is required")
+  .max(100, "Guest name must be 100 characters or less")
+  .regex(/^[a-zA-Z0-9\s'-]+$/, "Guest name can only contain letters, numbers, spaces, hyphens, and apostrophes");
+
+// RSVP Form Schema with conditional guest validation
 export const rsvpFormSchema = z.object({
   name: nameSchema,
   email: emailSchema,
   attendance: attendanceSchema,
-  guestCount: z
+  numberOfGuests: z
     .number()
     .int("Number of guests must be a whole number")
     .min(0, "Number of guests cannot be negative")
-    .max(5, "Maximum 5 additional guests allowed")
+    .max(10, "Maximum 10 guests allowed")
     .optional()
     .default(0),
+  guestNames: z
+    .array(guestNameSchema)
+    .max(10, "Maximum 10 guest names allowed")
+    .optional()
+    .default([]),
   dietaryRestrictions: z
     .string()
     .max(500, "Dietary restrictions must be 500 characters or less")
@@ -38,24 +50,45 @@ export const rsvpFormSchema = z.object({
     .string()
     .max(1000, "Notes must be 1000 characters or less")
     .optional(),
+}).refine((data) => {
+  // When attending with guests, guest names must be provided
+  if (data.attendance === "yes" && data.numberOfGuests > 0) {
+    return data.guestNames && data.guestNames.length === data.numberOfGuests;
+  }
+  return true;
+}, {
+  message: "Please provide names for all guests when attending",
+  path: ["guestNames"],
+}).refine((data) => {
+  // When not attending, guest count should be 0
+  if (data.attendance === "no" && data.numberOfGuests > 0) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Guest count must be 0 when not attending",
+  path: ["numberOfGuests"],
+}).refine((data) => {
+  // Guest names array length should not exceed guest count
+  if (data.guestNames && data.guestNames.length > data.numberOfGuests) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Number of guest names cannot exceed guest count",
+  path: ["guestNames"],
 });
 
-// Guest Schema for additional guests
+// Individual guest schema (simplified for guest names only)
 export const guestSchema = z.object({
-  name: nameSchema,
-  dietaryRestrictions: z
-    .string()
-    .max(500, "Dietary restrictions must be 500 characters or less")
-    .optional(),
+  name: guestNameSchema,
 });
 
-// Schema for multiple guests
-export const multipleGuestsSchema = z.array(guestSchema).max(5, "Maximum 5 additional guests allowed");
+// Schema for validating guest names array specifically
+export const guestNamesSchema = z.array(guestNameSchema).max(10, "Maximum 10 guest names allowed");
 
-// Complete RSVP schema including guests
-export const completeRSVPSchema = rsvpFormSchema.extend({
-  guests: multipleGuestsSchema.optional(),
-});
+// Complete RSVP schema (same as rsvpFormSchema since it already includes guest validation)
+export const completeRSVPSchema = rsvpFormSchema;
 
 // Email uniqueness validation (for server-side use)
 export const emailUniquenessSchema = z.object({
@@ -71,6 +104,7 @@ export const emailValidationSchema = z.object({
 // Type inference from schemas
 export type RSVPFormData = z.infer<typeof rsvpFormSchema>;
 export type GuestData = z.infer<typeof guestSchema>;
+export type GuestNamesData = z.infer<typeof guestNamesSchema>;
 export type CompleteRSVPData = z.infer<typeof completeRSVPSchema>;
 export type EmailValidationData = z.infer<typeof emailValidationSchema>;
 

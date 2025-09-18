@@ -33,7 +33,7 @@ function generateTestCreateData(guestNames?: string[]): RSVPCreateData {
     email: 'newtest@example.com',
     isAttending: true,
     numberOfGuests: guestNames ? guestNames.length : 1,
-    guestNames,
+    guestNames: guestNames || [],
     notes: 'New test RSVP'
   };
 }

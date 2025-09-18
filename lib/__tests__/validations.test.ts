@@ -14,7 +14,8 @@ describe('RSVP Form Validation', () => {
     name: 'John Doe',
     email: 'john@example.com',
     attendance: 'yes',
-    guestCount: 2,
+    numberOfGuests: 2,
+    guestNames: ['Jane Doe', 'Bob Smith'],
     dietaryRestrictions: 'Vegetarian',
     notes: 'Looking forward to the celebration!',
   }
@@ -51,17 +52,17 @@ describe('RSVP Form Validation', () => {
     })
 
     it('should reject negative guest count', async () => {
-      const invalidData = { ...validRSVPData, guestCount: -1 }
+      const invalidData = { ...validRSVPData, numberOfGuests: -1 }
       const result = await validateRSVPForm(invalidData)
       expect(result.success).toBe(false)
-      expect(result.errors![0].field).toBe('guestCount')
+      expect(result.errors![0].field).toBe('numberOfGuests')
     })
 
     it('should reject too many guests', async () => {
-      const invalidData = { ...validRSVPData, guestCount: 10 }
+      const invalidData = { ...validRSVPData, numberOfGuests: 11 }
       const result = await validateRSVPForm(invalidData)
       expect(result.success).toBe(false)
-      expect(result.errors![0].field).toBe('guestCount')
+      expect(result.errors![0].field).toBe('numberOfGuests')
     })
 
     it('should reject too long dietary restrictions', async () => {
@@ -83,7 +84,8 @@ describe('RSVP Form Validation', () => {
         name: 'Jane Doe',
         email: 'jane@example.com',
         attendance: 'no' as const,
-        guestCount: 0,
+        numberOfGuests: 0,
+        guestNames: [],
       }
       const result = await validateRSVPForm(minimalData)
       expect(result.success).toBe(true)
@@ -154,19 +156,20 @@ describe('RSVP Form Validation', () => {
       expect(result.errors![0].field).toBe('attendance')
     })
 
-    it('should handle default guest count', async () => {
-      const dataWithoutGuestCount = {
+    it('should handle default values', async () => {
+      const dataWithoutDefaults = {
         name: 'John Doe',
         email: 'john@example.com',
-        attendance: 'yes' as const,
+        attendance: 'no' as const,
       }
 
       try {
-        const parsed = rsvpFormSchema.parse(dataWithoutGuestCount)
-        expect(parsed.guestCount).toBe(0)
+        const parsed = rsvpFormSchema.parse(dataWithoutDefaults)
+        expect(parsed.numberOfGuests).toBe(0)
+        expect(parsed.guestNames).toEqual([])
       } catch (error) {
         // This should not happen
-        fail('Schema should provide default guest count')
+        fail('Schema should provide default values')
       }
     })
   })
@@ -178,7 +181,7 @@ describe('RSVP Form Validation', () => {
           name: '',
           email: 'invalid',
           attendance: 'maybe',
-          guestCount: -1,
+          numberOfGuests: -1,
         })
       } catch (error) {
         if (error instanceof z.ZodError) {

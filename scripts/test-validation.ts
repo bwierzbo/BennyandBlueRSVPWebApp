@@ -16,7 +16,8 @@ async function runValidationTests() {
     name: 'John Doe',
     email: 'john@example.com',
     attendance: 'yes',
-    guestCount: 2,
+    numberOfGuests: 2,
+    guestNames: ['Jane Doe', 'Bob Smith'],
     dietaryRestrictions: 'Vegetarian',
     notes: 'Looking forward to celebrating!',
   }
@@ -56,8 +57,8 @@ async function runValidationTests() {
   }
 
   // Test 5: Too many guests
-  console.log('\nTest 5: Too many guests (> 5)')
-  const tooManyGuestsData = { ...validData, guestCount: 10 }
+  console.log('\nTest 5: Too many guests (> 10)')
+  const tooManyGuestsData = { ...validData, numberOfGuests: 11, guestNames: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'] }
   const tooManyGuestsResult = await validateRSVPForm(tooManyGuestsData)
   console.log('✅ Too many guests test:', !tooManyGuestsResult.success ? 'PASSED' : 'FAILED')
   if (!tooManyGuestsResult.success) {
@@ -66,7 +67,7 @@ async function runValidationTests() {
 
   // Test 6: Negative guest count
   console.log('\nTest 6: Negative guest count')
-  const negativeGuestData = { ...validData, guestCount: -1 }
+  const negativeGuestData = { ...validData, numberOfGuests: -1 }
   const negativeGuestResult = await validateRSVPForm(negativeGuestData)
   console.log('✅ Negative guest count test:', !negativeGuestResult.success ? 'PASSED' : 'FAILED')
   if (!negativeGuestResult.success) {
@@ -112,7 +113,8 @@ async function runValidationTests() {
     name: 'Jane Doe',
     email: 'jane@example.com',
     attendance: 'no' as const,
-    guestCount: 0,
+    numberOfGuests: 0,
+    guestNames: [],
   }
   const minimalResult = await validateRSVPForm(minimalData)
   console.log('✅ Minimal data test:', minimalResult.success ? 'PASSED' : 'FAILED')
@@ -141,8 +143,8 @@ async function runValidationTests() {
       attendance: 'yes' as const,
     }
     const parsed = rsvpFormSchema.parse(dataWithoutGuestCount)
-    console.log('✅ Default guest count test:', parsed.guestCount === 0 ? 'PASSED' : 'FAILED')
-    console.log('   Default guest count:', parsed.guestCount)
+    console.log('✅ Default guest count test:', parsed.numberOfGuests === 0 ? 'PASSED' : 'FAILED')
+    console.log('   Default guest count:', parsed.numberOfGuests)
   } catch (error) {
     console.log('❌ Default guest count test: FAILED')
     console.log('   Error:', error)

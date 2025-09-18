@@ -19,7 +19,7 @@ export interface RSVPCreateData {
   email: string;
   isAttending: boolean;
   numberOfGuests: number;
-  guestNames?: string[];
+  guestNames: string[];
   notes?: string;
 }
 

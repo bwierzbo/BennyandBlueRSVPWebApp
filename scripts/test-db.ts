@@ -29,6 +29,7 @@ async function testDatabase() {
       email: 'test@example.com',
       isAttending: true,
       numberOfGuests: 2,
+      guestNames: ['Guest 1', 'Guest 2'],
       notes: 'Test RSVP entry'
     });
     console.log('✅ RSVP created:', testRSVP);

@@ -27,7 +27,7 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
     resolver: zodResolver(rsvpFormSchema),
     mode: "onChange" as const,
     defaultValues: {
-      guestCount: 0,
+      numberOfGuests: 0,
     }
   })
 
@@ -104,19 +104,19 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
       {/* Guest Count Field - Only show if attending */}
       {attendance === "yes" && (
         <div className="space-y-2">
-          <Label htmlFor="guestCount">Number of Additional Guests</Label>
+          <Label htmlFor="numberOfGuests">Number of Additional Guests</Label>
           <Input
-            id="guestCount"
+            id="numberOfGuests"
             type="number"
             min="0"
-            max="5"
-            {...register("guestCount", { valueAsNumber: true })}
+            max="10"
+            {...register("numberOfGuests", { valueAsNumber: true })}
             placeholder="0"
-            className={errors.guestCount ? "border-red-500" : ""}
+            className={errors.numberOfGuests ? "border-red-500" : ""}
           />
-          <p className="text-sm text-gray-500">Maximum 5 additional guests allowed</p>
-          {errors.guestCount && (
-            <p className="text-sm text-red-500">{errors.guestCount.message}</p>
+          <p className="text-sm text-gray-500">Maximum 10 guests allowed</p>
+          {errors.numberOfGuests && (
+            <p className="text-sm text-red-500">{errors.numberOfGuests.message}</p>
           )}
         </div>
       )}

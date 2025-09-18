@@ -33,7 +33,8 @@ async function saveRSVPToDatabase(data: RSVPFormData): Promise<{ id: number }> {
     name: data.name,
     email: data.email,
     isAttending: data.attendance === "yes",
-    numberOfGuests: data.guestCount || 0,
+    numberOfGuests: data.numberOfGuests || 0,
+    guestNames: data.guestNames || [],
     notes: data.notes || undefined
   }
 

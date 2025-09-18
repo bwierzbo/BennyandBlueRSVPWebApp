@@ -16,7 +16,14 @@ export const ERROR_MESSAGES = {
   EMAIL_TOO_LONG: "Email address is too long (maximum 254 characters)",
   NAME_TOO_LONG: "Name is too long (maximum 100 characters)",
   GUEST_COUNT_NEGATIVE: "Number of guests cannot be negative",
-  GUEST_COUNT_TOO_HIGH: "Sorry, we can only accommodate up to 5 additional guests per RSVP",
+  GUEST_COUNT_TOO_HIGH: "Sorry, we can only accommodate up to 10 guests per RSVP",
+  GUEST_NAMES_REQUIRED: "Please provide names for all guests when attending",
+  GUEST_NAME_REQUIRED: "Guest name is required",
+  GUEST_NAME_TOO_LONG: "Guest name is too long (maximum 100 characters)",
+  GUEST_NAME_INVALID: "Guest name can only contain letters, numbers, spaces, hyphens, and apostrophes",
+  GUEST_NAMES_TOO_MANY: "Maximum 10 guest names allowed",
+  GUEST_NAMES_MISMATCH: "Number of guest names cannot exceed guest count",
+  GUEST_COUNT_NOT_ATTENDING: "Guest count must be 0 when not attending",
   DIETARY_RESTRICTIONS_TOO_LONG: "Dietary restrictions note is too long (maximum 500 characters)",
   NOTES_TOO_LONG: "Notes are too long (maximum 1000 characters)",
 
@@ -51,10 +58,19 @@ export function enhanceErrorMessage(error: ValidationError): ValidationError {
       "Please select your attendance status": ERROR_MESSAGES.REQUIRED_ATTENDANCE,
       "Attendance must be 'yes' or 'no'": ERROR_MESSAGES.REQUIRED_ATTENDANCE,
     },
-    guestCount: {
+    numberOfGuests: {
       "Number of guests must be a whole number": ERROR_MESSAGES.INVALID_GUEST_COUNT,
       "Number of guests cannot be negative": ERROR_MESSAGES.GUEST_COUNT_NEGATIVE,
-      "Maximum 5 additional guests allowed": ERROR_MESSAGES.GUEST_COUNT_TOO_HIGH,
+      "Maximum 10 guests allowed": ERROR_MESSAGES.GUEST_COUNT_TOO_HIGH,
+      "Guest count must be 0 when not attending": ERROR_MESSAGES.GUEST_COUNT_NOT_ATTENDING,
+    },
+    guestNames: {
+      "Please provide names for all guests when attending": ERROR_MESSAGES.GUEST_NAMES_REQUIRED,
+      "Maximum 10 guest names allowed": ERROR_MESSAGES.GUEST_NAMES_TOO_MANY,
+      "Number of guest names cannot exceed guest count": ERROR_MESSAGES.GUEST_NAMES_MISMATCH,
+      "Guest name is required": ERROR_MESSAGES.GUEST_NAME_REQUIRED,
+      "Guest name must be 100 characters or less": ERROR_MESSAGES.GUEST_NAME_TOO_LONG,
+      "Guest name can only contain letters, numbers, spaces, hyphens, and apostrophes": ERROR_MESSAGES.GUEST_NAME_INVALID,
     },
     dietaryRestrictions: {
       "Dietary restrictions must be 500 characters or less": ERROR_MESSAGES.DIETARY_RESTRICTIONS_TOO_LONG,
