@@ -84,7 +84,7 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
               {...register("attendance")}
               className="w-4 h-4 text-blue-600"
             />
-            <span>Yes, I'll be there!</span>
+            <span>Yes, I&apos;ll be there!</span>
           </label>
           <label className="flex items-center space-x-2 cursor-pointer">
             <input
@@ -93,7 +93,7 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
               {...register("attendance")}
               className="w-4 h-4 text-blue-600"
             />
-            <span>Sorry, can't make it</span>
+            <span>Sorry, can&apos;t make it</span>
           </label>
         </div>
         {errors.attendance && (
