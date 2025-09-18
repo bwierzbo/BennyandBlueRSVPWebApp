@@ -157,7 +157,7 @@ async function testGuestNamesFormatting() {
       email: 'jane@example.com',
       is_attending: true,
       number_of_guests: 0,
-      guest_names: JSON.stringify([]),
+      guest_names: null, // Empty arrays are converted to null by enhanced utilities
       notes: 'Test create data'
     };
 
