@@ -1,20 +1,135 @@
 import { sql } from '@vercel/postgres';
 import type { RSVPRecord, RSVP, RSVPCreateData, RSVPUpdateData } from '../types';
 
+// Guest names validation utilities
+export const guestValidation = {
+  // Validate guest names array
+  validateGuestNames: (guestNames: string[] | undefined): { isValid: boolean; error?: string } => {
+    if (!guestNames) {
+      return { isValid: true }; // undefined/null is valid (no guests)
+    }
+
+    if (!Array.isArray(guestNames)) {
+      return { isValid: false, error: 'Guest names must be an array' };
+    }
+
+    if (guestNames.length > 10) {
+      return { isValid: false, error: 'Maximum 10 guest names allowed' };
+    }
+
+    if (guestNames.length === 0) {
+      return { isValid: true }; // empty array is valid
+    }
+
+    // Check each guest name
+    for (let i = 0; i < guestNames.length; i++) {
+      const name = guestNames[i];
+
+      if (typeof name !== 'string') {
+        return { isValid: false, error: `Guest name at index ${i} must be a string` };
+      }
+
+      if (name.trim().length === 0) {
+        return { isValid: false, error: `Guest name at index ${i} cannot be empty` };
+      }
+
+      if (name.length > 100) {
+        return { isValid: false, error: `Guest name at index ${i} cannot exceed 100 characters` };
+      }
+    }
+
+    return { isValid: true };
+  },
+
+  // Validate guest count consistency
+  validateGuestCount: (numberOfGuests: number, guestNames?: string[]): { isValid: boolean; error?: string } => {
+    if (!guestNames || guestNames.length === 0) {
+      return { isValid: true }; // no guest names provided, count is independent
+    }
+
+    if (numberOfGuests !== guestNames.length) {
+      return {
+        isValid: false,
+        error: `Number of guests (${numberOfGuests}) must match guest names count (${guestNames.length})`
+      };
+    }
+
+    return { isValid: true };
+  },
+
+  // Safely serialize guest names to JSON
+  safeSerializeGuestNames: (guestNames?: string[]): string | null => {
+    if (!guestNames || guestNames.length === 0) {
+      return null;
+    }
+
+    try {
+      return JSON.stringify(guestNames);
+    } catch (error) {
+      throw new Error(`Failed to serialize guest names: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Safely parse guest names from JSON
+  safeParseGuestNames: (guestNamesJson: any): string[] | null => {
+    if (!guestNamesJson) {
+      return null;
+    }
+
+    if (typeof guestNamesJson === 'string') {
+      try {
+        const parsed = JSON.parse(guestNamesJson);
+        if (!Array.isArray(parsed)) {
+          throw new Error('Guest names JSON must contain an array');
+        }
+        return parsed;
+      } catch (error) {
+        throw new Error(`Failed to parse guest names JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    if (Array.isArray(guestNamesJson)) {
+      return guestNamesJson; // Already parsed by PostgreSQL
+    }
+
+    throw new Error('Guest names must be a string (JSON) or array');
+  }
+};
+
 // Helper functions to convert between database and API formats
 export const formatConverters = {
   // Convert database record (snake_case) to API format (camelCase)
-  dbToApi: (dbRecord: RSVPRecord): RSVP => ({
-    id: dbRecord.id,
-    name: dbRecord.name,
-    email: dbRecord.email,
-    isAttending: dbRecord.is_attending,
-    numberOfGuests: dbRecord.number_of_guests,
-    guestNames: dbRecord.guest_names,
-    notes: dbRecord.notes,
-    createdAt: dbRecord.created_at,
-    updatedAt: dbRecord.updated_at
-  }),
+  dbToApi: (dbRecord: RSVPRecord): RSVP => {
+    try {
+      const guestNames = guestValidation.safeParseGuestNames(dbRecord.guest_names);
+
+      return {
+        id: dbRecord.id,
+        name: dbRecord.name,
+        email: dbRecord.email,
+        isAttending: dbRecord.is_attending,
+        numberOfGuests: dbRecord.number_of_guests,
+        guestNames,
+        notes: dbRecord.notes,
+        createdAt: dbRecord.created_at,
+        updatedAt: dbRecord.updated_at
+      };
+    } catch (error) {
+      console.error('Error in dbToApi conversion:', error);
+      // Return record with null guest names on parsing error
+      return {
+        id: dbRecord.id,
+        name: dbRecord.name,
+        email: dbRecord.email,
+        isAttending: dbRecord.is_attending,
+        numberOfGuests: dbRecord.number_of_guests,
+        guestNames: null,
+        notes: dbRecord.notes,
+        createdAt: dbRecord.created_at,
+        updatedAt: dbRecord.updated_at
+      };
+    }
+  },
 
   // Convert API format (camelCase) to database format (snake_case)
   apiToDb: (apiData: RSVPCreateData | RSVPUpdateData) => {
@@ -33,7 +148,7 @@ export const formatConverters = {
       dbData.number_of_guests = apiData.numberOfGuests;
     }
     if ('guestNames' in apiData && apiData.guestNames !== undefined) {
-      dbData.guest_names = JSON.stringify(apiData.guestNames);
+      dbData.guest_names = guestValidation.safeSerializeGuestNames(apiData.guestNames);
     }
     if ('notes' in apiData && apiData.notes !== undefined) {
       dbData.notes = apiData.notes;
@@ -128,7 +243,21 @@ export const rsvpDb = {
   // Create a new RSVP entry
   create: async (rsvpData: RSVPCreateData): Promise<RSVP> => {
     try {
-      const guestNamesJson = rsvpData.guestNames ? JSON.stringify(rsvpData.guestNames) : null;
+      // Validate guest names
+      const guestValidationResult = guestValidation.validateGuestNames(rsvpData.guestNames);
+      if (!guestValidationResult.isValid) {
+        throw new Error(`Invalid guest names: ${guestValidationResult.error}`);
+      }
+
+      // Validate guest count consistency
+      const countValidationResult = guestValidation.validateGuestCount(rsvpData.numberOfGuests, rsvpData.guestNames);
+      if (!countValidationResult.isValid) {
+        throw new Error(`Invalid guest count: ${countValidationResult.error}`);
+      }
+
+      // Safely serialize guest names
+      const guestNamesJson = guestValidation.safeSerializeGuestNames(rsvpData.guestNames);
+
       const result = await sql`
         INSERT INTO rsvp (name, email, is_attending, number_of_guests, guest_names, notes)
         VALUES (${rsvpData.name}, ${rsvpData.email}, ${rsvpData.isAttending}, ${rsvpData.numberOfGuests}, ${guestNamesJson}, ${rsvpData.notes || null})
@@ -171,6 +300,22 @@ export const rsvpDb = {
   // Update RSVP
   update: async (id: number, updateData: RSVPUpdateData): Promise<RSVP | null> => {
     try {
+      // Validate guest names if provided
+      if (updateData.guestNames !== undefined) {
+        const guestValidationResult = guestValidation.validateGuestNames(updateData.guestNames);
+        if (!guestValidationResult.isValid) {
+          throw new Error(`Invalid guest names: ${guestValidationResult.error}`);
+        }
+
+        // Validate guest count consistency if both are being updated
+        if (updateData.numberOfGuests !== undefined) {
+          const countValidationResult = guestValidation.validateGuestCount(updateData.numberOfGuests, updateData.guestNames);
+          if (!countValidationResult.isValid) {
+            throw new Error(`Invalid guest count: ${countValidationResult.error}`);
+          }
+        }
+      }
+
       const setClauses = [];
       const values = [];
       let paramCounter = 1;
@@ -189,7 +334,7 @@ export const rsvpDb = {
       }
       if (updateData.guestNames !== undefined) {
         setClauses.push(`guest_names = $${paramCounter++}`);
-        values.push(updateData.guestNames ? JSON.stringify(updateData.guestNames) : null);
+        values.push(guestValidation.safeSerializeGuestNames(updateData.guestNames));
       }
       if (updateData.notes !== undefined) {
         setClauses.push(`notes = $${paramCounter++}`);
