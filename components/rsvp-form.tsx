@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -15,28 +15,94 @@ interface RSVPFormProps {
   isSubmitting?: boolean
 }
 
+// Venue Disclaimer Component
+function VenueDisclaimer() {
+  return (
+    <div className="p-4 bg-amber-50 border border-amber-200 rounded-md">
+      <div className="flex items-start">
+        <svg className="w-5 h-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+        </svg>
+        <div>
+          <h4 className="text-sm font-medium text-amber-800 mb-1">Venue Age Restriction</h4>
+          <p className="text-sm text-amber-700">
+            Please note that our venue has an age restriction policy. All guests must be 18 years or older.
+            We appreciate your understanding and look forward to celebrating with you!
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [guestNames, setGuestNames] = useState<string[]>([])
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid }
   } = useForm({
     resolver: zodResolver(rsvpFormSchema),
     mode: "onChange" as const,
     defaultValues: {
       numberOfGuests: 0,
+      guestNames: [],
     }
   })
 
   const attendance = watch("attendance")
+  const numberOfGuests = watch("numberOfGuests")
+
+  // Dynamic guest management
+  useEffect(() => {
+    const currentGuestCount = numberOfGuests || 0
+
+    if (attendance === "yes" && currentGuestCount > 0) {
+      // Update guest names array to match guest count
+      const newGuestNames = [...guestNames]
+
+      if (currentGuestCount > guestNames.length) {
+        // Add empty slots for new guests
+        for (let i = guestNames.length; i < currentGuestCount; i++) {
+          newGuestNames.push("")
+        }
+      } else if (currentGuestCount < guestNames.length) {
+        // Remove excess guest names
+        newGuestNames.splice(currentGuestCount)
+      }
+
+      setGuestNames(newGuestNames)
+      setValue("guestNames", newGuestNames)
+    } else if (attendance === "no" || currentGuestCount === 0) {
+      // Clear all guest fields when not attending or no guests
+      setGuestNames([])
+      setValue("guestNames", [])
+      if (attendance === "no") {
+        setValue("numberOfGuests", 0)
+      }
+    }
+  }, [attendance, numberOfGuests, setValue, guestNames])
+
+  const updateGuestName = (index: number, name: string) => {
+    const newGuestNames = [...guestNames]
+    newGuestNames[index] = name
+    setGuestNames(newGuestNames)
+    setValue("guestNames", newGuestNames)
+  }
 
   const onFormSubmit = async (data: any) => {
     try {
       setSubmitError(null)
-      await onSubmit(data)
+      // Ensure guest names are included in the data
+      const formData = {
+        ...data,
+        guestNames: guestNames
+      }
+      await onSubmit(formData as RSVPFormData)
     } catch (error) {
       setSubmitError(formatErrorForDisplay(error))
     }
@@ -119,6 +185,45 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
             <p className="text-sm text-red-500">{errors.numberOfGuests.message}</p>
           )}
         </div>
+      )}
+
+      {/* Dynamic Guest Name Fields - Only show if attending with guests */}
+      {attendance === "yes" && (numberOfGuests || 0) > 0 && (
+        <div className="space-y-4">
+          <div className="border-t pt-4">
+            <Label className="text-base font-medium">Guest Names</Label>
+            <p className="text-sm text-gray-500 mb-4">
+              Please provide the full names of your guests
+            </p>
+            {guestNames.map((name, index) => (
+              <div key={index} className="space-y-2 mb-3">
+                <Label htmlFor={`guest-${index}`} className="text-sm">
+                  Guest {index + 1} Name *
+                </Label>
+                <Input
+                  id={`guest-${index}`}
+                  value={name}
+                  onChange={(e) => updateGuestName(index, e.target.value)}
+                  placeholder={`Enter guest ${index + 1} name`}
+                  className={errors.guestNames?.[index] ? "border-red-500" : ""}
+                />
+                {errors.guestNames?.[index] && (
+                  <p className="text-sm text-red-500">
+                    {errors.guestNames[index]?.message}
+                  </p>
+                )}
+              </div>
+            ))}
+            {errors.guestNames && !Array.isArray(errors.guestNames) && (
+              <p className="text-sm text-red-500">{errors.guestNames.message}</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Venue Disclaimer - Only show if attending */}
+      {attendance === "yes" && (
+        <VenueDisclaimer />
       )}
 
       {/* Dietary Restrictions Field - Only show if attending */}
