@@ -7,6 +7,7 @@ export interface RSVPRecord {
   email: string;
   is_attending: boolean;
   number_of_guests: number;
+  guest_names: string[] | null;
   notes: string | null;
   created_at: Date;
   updated_at: Date;
@@ -18,6 +19,7 @@ export interface RSVPCreateData {
   email: string;
   isAttending: boolean;
   numberOfGuests: number;
+  guestNames?: string[];
   notes?: string;
 }
 
@@ -26,6 +28,7 @@ export interface RSVPUpdateData {
   name?: string;
   isAttending?: boolean;
   numberOfGuests?: number;
+  guestNames?: string[];
   notes?: string;
 }
 
@@ -36,6 +39,7 @@ export interface RSVP {
   email: string;
   isAttending: boolean;
   numberOfGuests: number;
+  guestNames: string[] | null;
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;

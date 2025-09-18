@@ -10,6 +10,7 @@ export const formatConverters = {
     email: dbRecord.email,
     isAttending: dbRecord.is_attending,
     numberOfGuests: dbRecord.number_of_guests,
+    guestNames: dbRecord.guest_names,
     notes: dbRecord.notes,
     createdAt: dbRecord.created_at,
     updatedAt: dbRecord.updated_at
@@ -30,6 +31,9 @@ export const formatConverters = {
     }
     if ('numberOfGuests' in apiData && apiData.numberOfGuests !== undefined) {
       dbData.number_of_guests = apiData.numberOfGuests;
+    }
+    if ('guestNames' in apiData && apiData.guestNames !== undefined) {
+      dbData.guest_names = JSON.stringify(apiData.guestNames);
     }
     if ('notes' in apiData && apiData.notes !== undefined) {
       dbData.notes = apiData.notes;
@@ -77,6 +81,7 @@ export const db = {
           email VARCHAR(255) NOT NULL UNIQUE,
           is_attending BOOLEAN NOT NULL DEFAULT false,
           number_of_guests INTEGER NOT NULL DEFAULT 1 CHECK (number_of_guests >= 0),
+          guest_names JSONB DEFAULT NULL,
           notes TEXT,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -123,9 +128,10 @@ export const rsvpDb = {
   // Create a new RSVP entry
   create: async (rsvpData: RSVPCreateData): Promise<RSVP> => {
     try {
+      const guestNamesJson = rsvpData.guestNames ? JSON.stringify(rsvpData.guestNames) : null;
       const result = await sql`
-        INSERT INTO rsvp (name, email, is_attending, number_of_guests, notes)
-        VALUES (${rsvpData.name}, ${rsvpData.email}, ${rsvpData.isAttending}, ${rsvpData.numberOfGuests}, ${rsvpData.notes || null})
+        INSERT INTO rsvp (name, email, is_attending, number_of_guests, guest_names, notes)
+        VALUES (${rsvpData.name}, ${rsvpData.email}, ${rsvpData.isAttending}, ${rsvpData.numberOfGuests}, ${guestNamesJson}, ${rsvpData.notes || null})
         RETURNING *
       `;
       return formatConverters.dbToApi(result.rows[0] as RSVPRecord);
@@ -180,6 +186,10 @@ export const rsvpDb = {
       if (updateData.numberOfGuests !== undefined) {
         setClauses.push(`number_of_guests = $${paramCounter++}`);
         values.push(updateData.numberOfGuests);
+      }
+      if (updateData.guestNames !== undefined) {
+        setClauses.push(`guest_names = $${paramCounter++}`);
+        values.push(updateData.guestNames ? JSON.stringify(updateData.guestNames) : null);
       }
       if (updateData.notes !== undefined) {
         setClauses.push(`notes = $${paramCounter++}`);
