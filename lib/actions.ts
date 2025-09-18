@@ -38,19 +38,85 @@ async function saveRSVPToDatabase(data: RSVPFormData): Promise<{ id: number }> {
     notes: data.notes || undefined
   }
 
-  const savedRSVP = await rsvpDb.create(dbData)
-  return { id: savedRSVP.id }
+  try {
+    const savedRSVP = await rsvpDb.create(dbData)
+    return { id: savedRSVP.id }
+  } catch (error) {
+    console.error("Database save error:", error)
+
+    // Check for specific database constraint errors
+    if (error instanceof Error) {
+      if (error.message.includes("unique constraint") || error.message.includes("duplicate key")) {
+        throw new Error("Email address is already registered for an RSVP")
+      }
+      if (error.message.includes("Invalid guest names") || error.message.includes("Invalid guest count")) {
+        throw new Error(error.message)
+      }
+    }
+
+    throw new Error("Failed to save RSVP to database")
+  }
+}
+
+// Helper function to extract guest names from FormData
+function extractGuestNames(formData: FormData): string[] {
+  const guestNames: string[] = []
+
+  // Check for guest names in multiple possible formats
+  // Format 1: Individual guest fields (guestName0, guestName1, etc.)
+  let index = 0
+  while (formData.has(`guestName${index}`)) {
+    const guestName = formData.get(`guestName${index}`)?.toString().trim()
+    if (guestName) {
+      guestNames.push(guestName)
+    }
+    index++
+  }
+
+  // Format 2: Array-style fields (guestNames[0], guestNames[1], etc.)
+  if (guestNames.length === 0) {
+    index = 0
+    while (formData.has(`guestNames[${index}]`)) {
+      const guestName = formData.get(`guestNames[${index}]`)?.toString().trim()
+      if (guestName) {
+        guestNames.push(guestName)
+      }
+      index++
+    }
+  }
+
+  // Format 3: JSON string in single field
+  if (guestNames.length === 0) {
+    const guestNamesJson = formData.get("guestNames")?.toString()
+    if (guestNamesJson) {
+      try {
+        const parsed = JSON.parse(guestNamesJson)
+        if (Array.isArray(parsed)) {
+          guestNames.push(...parsed.filter(name => typeof name === 'string' && name.trim().length > 0))
+        }
+      } catch (error) {
+        // Invalid JSON, ignore
+      }
+    }
+  }
+
+  return guestNames
 }
 
 // Server action to submit RSVP
 export async function submitRSVP(formData: FormData): Promise<ValidationResult<{ id: number } | undefined>> {
   try {
-    // Extract data from FormData
+    // Extract guest names from FormData
+    const guestNames = extractGuestNames(formData)
+
+    // Extract data from FormData and map to validation schema format
     const rawData = {
       name: formData.get("name"),
       email: formData.get("email"),
       attendance: formData.get("attendance"),
-      guestCount: formData.get("guestCount") ? Number(formData.get("guestCount")) : 0,
+      numberOfGuests: formData.get("numberOfGuests") ? Number(formData.get("numberOfGuests")) :
+                     formData.get("guestCount") ? Number(formData.get("guestCount")) : 0,
+      guestNames: guestNames.length > 0 ? guestNames : undefined,
       dietaryRestrictions: formData.get("dietaryRestrictions") || undefined,
       notes: formData.get("notes") || undefined,
     }
@@ -84,6 +150,21 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
 
   } catch (error) {
     console.error("RSVP submission error:", error)
+
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.message.includes("Email address is already registered")) {
+        return createServerValidationResult(undefined, [
+          createServerValidationError("email", ERROR_MESSAGES.EMAIL_ALREADY_EXISTS)
+        ])
+      }
+      if (error.message.includes("Invalid guest names") || error.message.includes("Invalid guest count")) {
+        return createServerValidationResult(undefined, [
+          createServerValidationError("guestNames", error.message)
+        ])
+      }
+    }
+
     return createServerValidationResult(undefined, [
       createServerValidationError("_form", ERROR_MESSAGES.SERVER_ERROR)
     ])
@@ -135,6 +216,21 @@ export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResu
 
   } catch (error) {
     console.error("RSVP submission error:", error)
+
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.message.includes("Email address is already registered")) {
+        return createServerValidationResult(undefined, [
+          createServerValidationError("email", ERROR_MESSAGES.EMAIL_ALREADY_EXISTS)
+        ])
+      }
+      if (error.message.includes("Invalid guest names") || error.message.includes("Invalid guest count")) {
+        return createServerValidationResult(undefined, [
+          createServerValidationError("guestNames", error.message)
+        ])
+      }
+    }
+
     return createServerValidationResult(undefined, [
       createServerValidationError("_form", ERROR_MESSAGES.SERVER_ERROR)
     ])
