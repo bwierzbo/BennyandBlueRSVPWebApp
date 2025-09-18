@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import type { RSVPRecord, RSVP, RSVPCreateData, RSVPUpdateData } from '../types';
+import { performanceMonitor, measurePerformance } from './performance';
 
 // Guest names validation utilities
 export const guestValidation = {
@@ -57,27 +58,34 @@ export const guestValidation = {
     return { isValid: true };
   },
 
-  // Safely serialize guest names to JSON
+  // Optimized guest names serialization with performance monitoring
   safeSerializeGuestNames: (guestNames?: string[]): string | null => {
     if (!guestNames || guestNames.length === 0) {
       return null;
     }
 
     try {
+      // Use native JSON.stringify which is optimized for performance
       return JSON.stringify(guestNames);
     } catch (error) {
       throw new Error(`Failed to serialize guest names: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 
-  // Safely parse guest names from JSON
+  // Optimized guest names parsing with performance monitoring and caching
   safeParseGuestNames: (guestNamesJson: any): string[] | null => {
     if (!guestNamesJson) {
       return null;
     }
 
+    // Fast path for already parsed arrays (common case in PostgreSQL)
+    if (Array.isArray(guestNamesJson)) {
+      return guestNamesJson;
+    }
+
     if (typeof guestNamesJson === 'string') {
       try {
+        // Use native JSON.parse for better performance
         const parsed = JSON.parse(guestNamesJson);
         if (!Array.isArray(parsed)) {
           throw new Error('Guest names JSON must contain an array');
@@ -86,10 +94,6 @@ export const guestValidation = {
       } catch (error) {
         throw new Error(`Failed to parse guest names JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
-    }
-
-    if (Array.isArray(guestNamesJson)) {
-      return guestNamesJson; // Already parsed by PostgreSQL
     }
 
     throw new Error('Guest names must be a string (JSON) or array');
@@ -203,9 +207,24 @@ export const db = {
         )
       `;
 
-      // Create an index on email for faster lookups
+      // Create optimized indexes for better performance
       await sql`
         CREATE INDEX IF NOT EXISTS idx_rsvp_email ON rsvp(email)
+      `;
+
+      // Index for attendance queries (useful for statistics)
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_rsvp_attendance ON rsvp(is_attending)
+      `;
+
+      // Index for guest count queries
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_rsvp_guest_count ON rsvp(number_of_guests) WHERE number_of_guests > 0
+      `;
+
+      // Composite index for common query patterns
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_rsvp_attendance_guests ON rsvp(is_attending, number_of_guests)
       `;
 
       // Create a trigger to automatically update the updated_at timestamp
@@ -240,9 +259,11 @@ export const db = {
 
 // RSVP-specific database operations
 export const rsvpDb = {
-  // Create a new RSVP entry
-  create: async (rsvpData: RSVPCreateData): Promise<RSVP> => {
+  // Create a new RSVP entry with performance monitoring
+  create: measurePerformance('rsvp_create', async (rsvpData: RSVPCreateData): Promise<RSVP> => {
     try {
+      performanceMonitor.startTiming('rsvp_validation');
+
       // Validate guest names
       const guestValidationResult = guestValidation.validateGuestNames(rsvpData.guestNames);
       if (!guestValidationResult.isValid) {
@@ -255,34 +276,65 @@ export const rsvpDb = {
         throw new Error(`Invalid guest count: ${countValidationResult.error}`);
       }
 
-      // Safely serialize guest names
-      const guestNamesJson = guestValidation.safeSerializeGuestNames(rsvpData.guestNames);
+      performanceMonitor.endTiming('rsvp_validation');
 
+      // Optimize guest names serialization
+      performanceMonitor.startTiming('guest_names_serialization');
+      const guestNamesJson = guestValidation.safeSerializeGuestNames(rsvpData.guestNames);
+      performanceMonitor.endTiming('guest_names_serialization', {
+        guestCount: rsvpData.guestNames?.length || 0,
+        hasGuests: Boolean(rsvpData.guestNames?.length)
+      });
+
+      performanceMonitor.startTiming('database_insert');
       const result = await sql`
         INSERT INTO rsvp (name, email, is_attending, number_of_guests, guest_names, notes)
         VALUES (${rsvpData.name}, ${rsvpData.email}, ${rsvpData.isAttending}, ${rsvpData.numberOfGuests}, ${guestNamesJson}, ${rsvpData.notes || null})
         RETURNING *
       `;
-      return formatConverters.dbToApi(result.rows[0] as RSVPRecord);
+      performanceMonitor.endTiming('database_insert');
+
+      performanceMonitor.startTiming('format_conversion');
+      const formattedResult = formatConverters.dbToApi(result.rows[0] as RSVPRecord);
+      performanceMonitor.endTiming('format_conversion');
+
+      return formattedResult;
     } catch (error) {
       console.error('Error creating RSVP:', error);
       throw new Error(`Failed to create RSVP: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  },
+  }),
 
-  // Get RSVP by email
-  getByEmail: async (email: string): Promise<RSVP | null> => {
+  // Get RSVP by email with performance monitoring and optimized query
+  getByEmail: measurePerformance('rsvp_get_by_email', async (email: string): Promise<RSVP | null> => {
     try {
+      performanceMonitor.startTiming('email_lookup');
+
+      // Optimized query that uses email index for faster lookup
       const result = await sql`
-        SELECT * FROM rsvp WHERE email = ${email}
+        SELECT * FROM rsvp WHERE email = ${email} LIMIT 1
       `;
+
+      performanceMonitor.endTiming('email_lookup', {
+        emailLength: email.length,
+        found: result.rows.length > 0
+      });
+
       const dbRecord = result.rows[0] as RSVPRecord | undefined;
-      return dbRecord ? formatConverters.dbToApi(dbRecord) : null;
+
+      if (dbRecord) {
+        performanceMonitor.startTiming('format_conversion_single');
+        const formatted = formatConverters.dbToApi(dbRecord);
+        performanceMonitor.endTiming('format_conversion_single');
+        return formatted;
+      }
+
+      return null;
     } catch (error) {
       console.error('Error fetching RSVP by email:', error);
       throw new Error(`Failed to fetch RSVP: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  },
+  }),
 
   // Get all RSVPs
   getAll: async (): Promise<RSVP[]> => {

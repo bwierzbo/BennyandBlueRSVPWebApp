@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { RSVPForm } from "@/components/rsvp-form"
+import { LazyPerformanceMonitor } from "@/components/lazy-performance-monitor"
 import { Button } from "@/components/ui/button"
 import { submitRSVPJSON } from "@/lib/actions"
 import type { RSVPFormData } from "@/lib/validations"
@@ -62,6 +63,9 @@ export default function RSVPPage() {
           </Link>
         </div>
       </div>
+
+      {/* Performance Monitor - Lazy loaded for development */}
+      <LazyPerformanceMonitor />
     </main>
   )
 }

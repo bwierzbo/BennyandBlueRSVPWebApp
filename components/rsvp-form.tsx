@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback, memo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -9,14 +9,15 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { rsvpFormSchema, type RSVPFormData } from "@/lib/validations"
 import { formatErrorForDisplay } from "@/lib/error-messages"
+import { performanceMonitor, usePerformanceMonitor, memoryMonitor, PERFORMANCE_TARGETS } from "@/lib/performance"
 
 interface RSVPFormProps {
   onSubmit: (data: RSVPFormData) => Promise<void>
   isSubmitting?: boolean
 }
 
-// Venue Disclaimer Component
-function VenueDisclaimer() {
+// Venue Disclaimer Component - Memoized to prevent unnecessary re-renders
+const VenueDisclaimer = memo(function VenueDisclaimer() {
   return (
     <div className="p-4 bg-amber-50 border border-amber-200 rounded-md">
       <div className="flex items-start">
@@ -33,9 +34,12 @@ function VenueDisclaimer() {
       </div>
     </div>
   )
-}
+})
 
 export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
+  // Performance monitoring for this component
+  const { startTiming, endTiming } = usePerformanceMonitor('RSVPForm')
+
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [guestNames, setGuestNames] = useState<string[]>([])
 
@@ -57,56 +61,142 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
   const attendance = watch("attendance")
   const numberOfGuests = watch("numberOfGuests")
 
-  // Dynamic guest management
-  useEffect(() => {
-    const currentGuestCount = numberOfGuests || 0
+  // Memoize guest count to reduce unnecessary calculations
+  const currentGuestCount = useMemo(() => numberOfGuests || 0, [numberOfGuests])
 
-    if (attendance === "yes" && currentGuestCount > 0) {
+  // Memoize attendance state to prevent unnecessary renders
+  const isAttending = useMemo(() => attendance === "yes", [attendance])
+
+  // Optimized dynamic guest management with performance monitoring
+  useEffect(() => {
+    startTiming('dynamic_guest_update')
+
+    // Use memoized values to reduce recalculations
+    if (isAttending && currentGuestCount > 0) {
       // Update guest names array to match guest count
       const newGuestNames = [...guestNames]
 
       if (currentGuestCount > guestNames.length) {
-        // Add empty slots for new guests
-        for (let i = guestNames.length; i < currentGuestCount; i++) {
-          newGuestNames.push("")
-        }
+        // Add empty slots for new guests efficiently
+        const emptySlots = Array(currentGuestCount - guestNames.length).fill("")
+        newGuestNames.push(...emptySlots)
       } else if (currentGuestCount < guestNames.length) {
         // Remove excess guest names
         newGuestNames.splice(currentGuestCount)
       }
 
-      setGuestNames(newGuestNames)
-      setValue("guestNames", newGuestNames)
-    } else if (attendance === "no" || currentGuestCount === 0) {
+      // Only update if there's an actual change to prevent unnecessary renders
+      if (JSON.stringify(newGuestNames) !== JSON.stringify(guestNames)) {
+        setGuestNames(newGuestNames)
+        setValue("guestNames", newGuestNames)
+      }
+    } else if (!isAttending || currentGuestCount === 0) {
       // Clear all guest fields when not attending or no guests
-      setGuestNames([])
-      setValue("guestNames", [])
-      if (attendance === "no") {
+      if (guestNames.length > 0) {
+        setGuestNames([])
+        setValue("guestNames", [])
+      }
+      if (!isAttending && numberOfGuests !== 0) {
         setValue("numberOfGuests", 0)
       }
     }
-  }, [attendance, numberOfGuests, setValue, guestNames])
 
-  const updateGuestName = (index: number, name: string) => {
-    const newGuestNames = [...guestNames]
-    newGuestNames[index] = name
-    setGuestNames(newGuestNames)
-    setValue("guestNames", newGuestNames)
-  }
+    endTiming('dynamic_guest_update')
+  }, [isAttending, currentGuestCount, setValue, guestNames, numberOfGuests, startTiming, endTiming])
 
-  const onFormSubmit = async (data: any) => {
+  // Optimized guest name update with performance monitoring
+  const updateGuestName = useCallback((index: number, name: string) => {
+    startTiming('guest_name_update')
+
+    // Use functional update to ensure we have the latest state
+    setGuestNames(currentNames => {
+      const newGuestNames = [...currentNames]
+      newGuestNames[index] = name
+      setValue("guestNames", newGuestNames)
+
+      endTiming('guest_name_update', {
+        index,
+        nameLength: name.length,
+        totalGuests: newGuestNames.length
+      })
+
+      return newGuestNames
+    })
+  }, [setValue, startTiming, endTiming])
+
+  // Memoized guest field component for optimal rendering
+  const GuestField = memo(function GuestField({ index, name, error, onUpdate }: {
+    index: number;
+    name: string;
+    error?: any;
+    onUpdate: (index: number, value: string) => void
+  }) {
+    return (
+    <div className="space-y-2 mb-3">
+      <Label htmlFor={`guest-${index}`} className="text-sm">
+        Guest {index + 1} Name *
+      </Label>
+      <Input
+        id={`guest-${index}`}
+        value={name}
+        onChange={(e) => onUpdate(index, e.target.value)}
+        placeholder={`Enter guest ${index + 1} name`}
+        className={error ? "border-red-500" : ""}
+      />
+      {error && (
+        <p className="text-sm text-red-500">
+          {error.message}
+        </p>
+      )}
+    </div>
+    )
+  })
+
+  // Memoized guest fields list for performance
+  const guestFields = useMemo(() => {
+    if (!isAttending || currentGuestCount === 0) return null
+
+    startTiming('guest_fields_render')
+
+    const fields = guestNames.map((name, index) => (
+      <GuestField
+        key={`guest-${index}`}
+        index={index}
+        name={name}
+        error={errors.guestNames?.[index]}
+        onUpdate={updateGuestName}
+      />
+    ))
+
+    endTiming('guest_fields_render', { guestCount: guestNames.length })
+    return fields
+  }, [guestNames, errors.guestNames, isAttending, currentGuestCount, updateGuestName, startTiming, endTiming, GuestField])
+
+  // Optimized form submission with performance monitoring and memory optimization
+  const onFormSubmit = useCallback(async (data: any) => {
+    startTiming('form_submission')
+
     try {
       setSubmitError(null)
-      // Ensure guest names are included in the data
-      const formData = {
+
+      // Memory-optimized form data preparation
+      const formData = memoryMonitor.monitorMemoryDuringOperation('form_data_preparation', () => ({
         ...data,
-        guestNames: guestNames
-      }
+        guestNames: guestNames.length > 0 ? guestNames : undefined // Avoid empty arrays
+      }))
+
       await onSubmit(formData as RSVPFormData)
+
+      endTiming('form_submission', {
+        hasGuests: guestNames.length > 0,
+        guestCount: guestNames.length,
+        formDataSize: JSON.stringify(formData).length
+      })
     } catch (error) {
+      endTiming('form_submission', { error: true })
       setSubmitError(formatErrorForDisplay(error))
     }
-  }
+  }, [guestNames, onSubmit, startTiming, endTiming])
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6 max-w-lg mx-auto">
@@ -168,7 +258,7 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
       </div>
 
       {/* Guest Count Field - Only show if attending */}
-      {attendance === "yes" && (
+      {isAttending && (
         <div className="space-y-2">
           <Label htmlFor="numberOfGuests">Number of Additional Guests</Label>
           <Input
@@ -187,33 +277,15 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
         </div>
       )}
 
-      {/* Dynamic Guest Name Fields - Only show if attending with guests */}
-      {attendance === "yes" && (numberOfGuests || 0) > 0 && (
+      {/* Dynamic Guest Name Fields - Optimized rendering */}
+      {guestFields && (
         <div className="space-y-4">
           <div className="border-t pt-4">
             <Label className="text-base font-medium">Guest Names</Label>
             <p className="text-sm text-gray-500 mb-4">
               Please provide the full names of your guests
             </p>
-            {guestNames.map((name, index) => (
-              <div key={index} className="space-y-2 mb-3">
-                <Label htmlFor={`guest-${index}`} className="text-sm">
-                  Guest {index + 1} Name *
-                </Label>
-                <Input
-                  id={`guest-${index}`}
-                  value={name}
-                  onChange={(e) => updateGuestName(index, e.target.value)}
-                  placeholder={`Enter guest ${index + 1} name`}
-                  className={errors.guestNames?.[index] ? "border-red-500" : ""}
-                />
-                {errors.guestNames?.[index] && (
-                  <p className="text-sm text-red-500">
-                    {errors.guestNames[index]?.message}
-                  </p>
-                )}
-              </div>
-            ))}
+            {guestFields}
             {errors.guestNames && !Array.isArray(errors.guestNames) && (
               <p className="text-sm text-red-500">{errors.guestNames.message}</p>
             )}
@@ -222,12 +294,12 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
       )}
 
       {/* Venue Disclaimer - Only show if attending */}
-      {attendance === "yes" && (
+      {isAttending && (
         <VenueDisclaimer />
       )}
 
       {/* Dietary Restrictions Field - Only show if attending */}
-      {attendance === "yes" && (
+      {isAttending && (
         <div className="space-y-2">
           <Label htmlFor="dietaryRestrictions">Dietary Restrictions or Allergies</Label>
           <Textarea
