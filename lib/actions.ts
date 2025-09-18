@@ -11,22 +11,34 @@ import {
   type ValidationResult
 } from "./validations"
 import { enhanceErrorMessages, ERROR_MESSAGES } from "./error-messages"
+import { rsvpDb } from "./db"
+import type { RSVPCreateData } from "../types"
 
-// Simulated database functions - these would be replaced with actual database calls
+// Database functions
 async function checkEmailExists(email: string, excludeId?: string): Promise<boolean> {
-  // TODO: Replace with actual database query
-  // For now, simulate some existing emails for testing
-  const existingEmails = ['test@example.com', 'existing@test.com']
-  return existingEmails.includes(email.toLowerCase())
+  try {
+    const existingRSVP = await rsvpDb.getByEmail(email)
+    return existingRSVP !== null
+  } catch (error) {
+    console.error("Error checking email existence:", error)
+    // In case of database error, return false to allow the submission to proceed
+    // The create operation will catch the unique constraint violation if needed
+    return false
+  }
 }
 
 async function saveRSVPToDatabase(data: RSVPFormData): Promise<{ id: number }> {
-  // TODO: Replace with actual database insert
-  // Simulate database save with a delay
-  await new Promise(resolve => setTimeout(resolve, 500))
+  // Convert from validation form format to database format
+  const dbData: RSVPCreateData = {
+    name: data.name,
+    email: data.email,
+    isAttending: data.attendance === "yes",
+    numberOfGuests: data.guestCount || 0,
+    notes: data.notes || undefined
+  }
 
-  // Simulate success with a random ID
-  return { id: Math.floor(Math.random() * 1000) + 1 }
+  const savedRSVP = await rsvpDb.create(dbData)
+  return { id: savedRSVP.id }
 }
 
 // Server action to submit RSVP
@@ -74,6 +86,19 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
     return createServerValidationResult(undefined, [
       createServerValidationError("_form", ERROR_MESSAGES.SERVER_ERROR)
     ])
+  }
+}
+
+// Server action to submit RSVP and redirect to thank you page
+export async function submitRSVPAndRedirect(formData: FormData): Promise<never> {
+  const result = await submitRSVP(formData)
+
+  if (result.success && result.data) {
+    // Redirect to thank you page with success
+    redirect("/thank-you?success=true")
+  } else {
+    // For now, redirect back to RSVP with error - this should be handled by the form component
+    redirect("/rsvp?error=submission-failed")
   }
 }
 
