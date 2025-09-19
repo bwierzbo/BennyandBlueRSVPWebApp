@@ -1,6 +1,6 @@
 import { sql } from '@vercel/postgres';
-import type { RSVPRecord, RSVP, RSVPCreateData, RSVPUpdateData } from '../types';
-import { performanceMonitor, measurePerformance } from './performance';
+import type { RSVPRecord, RSVP, RSVPCreateData, RSVPUpdateData, AdminRSVPData, AdminRSVPStats } from '../types';
+import { performanceMonitor, measurePerformance, PERFORMANCE_TARGETS } from './performance';
 
 // Guest names validation utilities
 export const guestValidation = {
@@ -444,7 +444,173 @@ export const rsvpDb = {
       console.error('Error fetching RSVP stats:', error);
       throw new Error(`Failed to fetch RSVP statistics: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  }
+  },
+
+  // Get all RSVPs with analytics for admin interface
+  getAllForAdmin: measurePerformance('admin_get_all', async (): Promise<AdminRSVPData> => {
+    try {
+      const startTime = Date.now();
+
+      // Single optimized query with analytics using window functions
+      const result = await sql`
+        WITH analytics AS (
+          SELECT
+            COUNT(*) as total_responses,
+            COUNT(CASE WHEN is_attending = true THEN 1 END) as attending_count,
+            COUNT(CASE WHEN is_attending = false THEN 1 END) as not_attending_count,
+            COALESCE(SUM(CASE WHEN is_attending = true THEN number_of_guests ELSE 0 END), 0) as total_guests,
+            COUNT(CASE WHEN created_at >= NOW() - INTERVAL '24 hours' THEN 1 END) as recent_submissions
+          FROM rsvp
+        )
+        SELECT
+          r.*,
+          a.total_responses::int,
+          a.attending_count::int,
+          a.not_attending_count::int,
+          a.total_guests::int,
+          a.recent_submissions::int
+        FROM rsvp r
+        CROSS JOIN analytics a
+        ORDER BY r.created_at DESC
+      `;
+
+      const queryTime = Date.now() - startTime;
+
+      // Validate performance target
+      if (queryTime > PERFORMANCE_TARGETS.DATABASE_OPERATION) {
+        console.warn(`Admin query exceeded performance target: ${queryTime}ms > ${PERFORMANCE_TARGETS.DATABASE_OPERATION}ms`);
+      }
+
+      // Extract analytics from first row (all rows have same analytics)
+      const firstRow = result.rows[0];
+      const analytics = firstRow ? {
+        totalResponses: Number(firstRow.total_responses),
+        attendingCount: Number(firstRow.attending_count),
+        notAttendingCount: Number(firstRow.not_attending_count),
+        totalGuests: Number(firstRow.total_guests),
+        attendanceRate: firstRow.total_responses > 0
+          ? Number(firstRow.attending_count) / Number(firstRow.total_responses) * 100
+          : 0,
+        averageGuestsPerRSVP: firstRow.total_responses > 0
+          ? Number(firstRow.total_guests) / Number(firstRow.total_responses)
+          : 0,
+        recentSubmissions: Number(firstRow.recent_submissions)
+      } : {
+        totalResponses: 0,
+        attendingCount: 0,
+        notAttendingCount: 0,
+        totalGuests: 0,
+        attendanceRate: 0,
+        averageGuestsPerRSVP: 0,
+        recentSubmissions: 0
+      };
+
+      // Convert all rows to RSVP format
+      const rsvps = result.rows.map((row) => {
+        // Remove analytics fields before conversion
+        const { total_responses, attending_count, not_attending_count, total_guests, recent_submissions, ...rsvpData } = row;
+        return formatConverters.dbToApi(rsvpData as RSVPRecord);
+      });
+
+      return {
+        rsvps,
+        analytics,
+        performance: {
+          queryTime,
+          recordCount: rsvps.length
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching admin RSVP data:', error);
+      throw new Error(`Failed to fetch admin RSVP data: ${error instanceof Error ? error.message : 'Database error'}`);
+    }
+  }),
+
+  // Get enhanced admin statistics with detailed breakdown
+  getAdminStats: measurePerformance('admin_get_stats', async (): Promise<AdminRSVPStats> => {
+    try {
+      const result = await sql`
+        WITH base_stats AS (
+          SELECT
+            COUNT(*) as total_responses,
+            COUNT(CASE WHEN is_attending = true THEN 1 END) as attending_count,
+            COUNT(CASE WHEN is_attending = false THEN 1 END) as not_attending_count,
+            COALESCE(SUM(CASE WHEN is_attending = true THEN number_of_guests ELSE 0 END), 0) as total_guests,
+            COUNT(CASE WHEN created_at >= NOW() - INTERVAL '24 hours' THEN 1 END) as recent_submissions_24h,
+            COUNT(CASE WHEN created_at >= NOW() - INTERVAL '7 days' THEN 1 END) as last_7_days,
+            COUNT(CASE WHEN created_at >= NOW() - INTERVAL '30 days' THEN 1 END) as last_30_days
+          FROM rsvp
+        ),
+        guest_breakdown AS (
+          SELECT
+            COUNT(CASE WHEN is_attending = true AND number_of_guests = 1 THEN 1 END) as solo_attendees,
+            COUNT(CASE WHEN is_attending = true AND number_of_guests = 2 THEN 1 END) as couples,
+            COUNT(CASE WHEN is_attending = true AND number_of_guests >= 3 THEN 1 END) as families
+          FROM rsvp
+        )
+        SELECT
+          bs.*,
+          gb.solo_attendees::int,
+          gb.couples::int,
+          gb.families::int,
+          (bs.total_responses - bs.last_30_days) as older_than_30_days
+        FROM base_stats bs
+        CROSS JOIN guest_breakdown gb
+      `;
+
+      const row = result.rows[0];
+
+      if (!row) {
+        // Return empty stats if no data
+        return {
+          total_responses: 0,
+          attending_count: 0,
+          not_attending_count: 0,
+          total_guests: 0,
+          attendance_rate: 0,
+          average_guests_per_rsvp: 0,
+          recent_submissions_24h: 0,
+          guest_breakdown: {
+            solo_attendees: 0,
+            couples: 0,
+            families: 0
+          },
+          submission_timeline: {
+            last_7_days: 0,
+            last_30_days: 0,
+            older: 0
+          }
+        };
+      }
+
+      const totalResponses = Number(row.total_responses);
+      const attendingCount = Number(row.attending_count);
+      const totalGuests = Number(row.total_guests);
+
+      return {
+        total_responses: totalResponses,
+        attending_count: attendingCount,
+        not_attending_count: Number(row.not_attending_count),
+        total_guests: totalGuests,
+        attendance_rate: totalResponses > 0 ? (attendingCount / totalResponses) * 100 : 0,
+        average_guests_per_rsvp: totalResponses > 0 ? totalGuests / totalResponses : 0,
+        recent_submissions_24h: Number(row.recent_submissions_24h),
+        guest_breakdown: {
+          solo_attendees: Number(row.solo_attendees),
+          couples: Number(row.couples),
+          families: Number(row.families)
+        },
+        submission_timeline: {
+          last_7_days: Number(row.last_7_days),
+          last_30_days: Number(row.last_30_days),
+          older: Number(row.older_than_30_days)
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching admin RSVP statistics:', error);
+      throw new Error(`Failed to fetch admin statistics: ${error instanceof Error ? error.message : 'Database error'}`);
+    }
+  })
 };
 
 // Export the sql instance for direct queries if needed
