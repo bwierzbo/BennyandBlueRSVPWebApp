@@ -1,42 +1,54 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { HeroImage } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
 
 export default function Home() {
   const weddingDate = new Date('2024-06-15')
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16 sm:py-24">
-        <div className="text-center">
-          {/* Names */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-4">
-            Benny <span className="text-blue-600 dark:text-blue-400">&</span> Blue
-          </h1>
+    <main className="min-h-screen">
+      {/* Hero Section with Image */}
+      <HeroImage
+        src="/images/hero.jpg"
+        alt="Benny & Blue's Wedding"
+        overlay="You're Invited - Benny & Blue's Wedding"
+        className="h-screen"
+        priority={true}
+      />
 
-          {/* Subtitle */}
-          <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8">
-            We&apos;re getting married!
-          </p>
+      {/* Welcome Section */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-4xl mx-auto">
+            {/* Names */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-4">
+              Benny <span className="text-blue-600 dark:text-blue-400">&</span> Blue
+            </h1>
 
-          {/* Wedding Date */}
-          <div className="mb-12">
-            <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-200 mb-2">
-              Save the Date
+            {/* Subtitle */}
+            <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8">
+              We&apos;re getting married and we want you there!
             </p>
-            <p className="text-2xl sm:text-3xl font-semibold text-blue-600 dark:text-blue-400">
-              {formatDate(weddingDate)}
-            </p>
-          </div>
 
-          {/* RSVP Button */}
-          <div className="mb-16">
-            <Link href="/rsvp">
-              <Button size="lg" className="text-lg px-8 py-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
-                RSVP Now
-              </Button>
-            </Link>
+            {/* Wedding Date */}
+            <div className="mb-12">
+              <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-200 mb-2">
+                Save the Date
+              </p>
+              <p className="text-2xl sm:text-3xl font-semibold text-blue-600 dark:text-blue-400">
+                {formatDate(weddingDate)}
+              </p>
+            </div>
+
+            {/* RSVP Button */}
+            <div className="mb-8">
+              <Link href="/rsvp">
+                <Button size="lg" className="text-lg px-8 py-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+                  RSVP Now
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
