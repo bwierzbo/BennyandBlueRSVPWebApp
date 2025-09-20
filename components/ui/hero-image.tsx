@@ -71,14 +71,24 @@ const HeroImage = React.forwardRef<HTMLDivElement, HeroImageProps>(
         ) : (
           // Fallback when image fails to load
           <div
-            className="w-full h-full bg-gradient-to-br from-rose-100 to-pink-200 flex items-center justify-center"
-            style={{ aspectRatio: `${width}/${height}` }}
+            className="w-full h-full flex items-center justify-center"
+            style={{
+              aspectRatio: `${width}/${height}`,
+              background: `linear-gradient(to bottom right,
+                rgb(var(--wedding-dusty-pink-50)),
+                rgb(var(--wedding-rose-gold-50)),
+                rgb(var(--wedding-lavender-50)))`
+            }}
             aria-label="Image placeholder"
           >
             <div className="text-center p-8">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-rose-300 flex items-center justify-center">
+              <div
+                className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: `rgb(var(--wedding-dusty-pink-300))` }}
+              >
                 <svg
-                  className="w-8 h-8 text-rose-600"
+                  className="w-8 h-8"
+                  style={{ color: `rgb(var(--wedding-dusty-pink-600))` }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -92,7 +102,12 @@ const HeroImage = React.forwardRef<HTMLDivElement, HeroImageProps>(
                   />
                 </svg>
               </div>
-              <p className="text-sm text-rose-600 font-medium">Image not available</p>
+              <p
+                className="text-sm font-medium"
+                style={{ color: `rgb(var(--wedding-dusty-pink-600))` }}
+              >
+                Image not available
+              </p>
             </div>
           </div>
         )}

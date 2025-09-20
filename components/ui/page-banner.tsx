@@ -69,13 +69,26 @@ const PageBanner = React.forwardRef<HTMLDivElement, PageBannerProps>(
         ) : (
           // Fallback when image fails to load
           <div
-            className="w-full h-full bg-gradient-to-r from-rose-50 via-pink-50 to-rose-50 flex items-center justify-center border-t border-b border-rose-200"
+            className="w-full h-full flex items-center justify-center border-t border-b"
+            style={{
+              background: `linear-gradient(to right,
+                rgb(var(--wedding-dusty-pink-50)),
+                rgb(var(--wedding-lavender-50)),
+                rgb(var(--wedding-rose-gold-50)),
+                rgb(var(--wedding-dusty-pink-50)))`,
+              borderTopColor: `rgb(var(--wedding-dusty-pink-200))`,
+              borderBottomColor: `rgb(var(--wedding-dusty-pink-200))`
+            }}
             aria-label="Banner placeholder"
           >
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-rose-200 flex items-center justify-center">
+              <div
+                className="w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: `rgb(var(--wedding-lavender-200))` }}
+              >
                 <svg
-                  className="w-6 h-6 text-rose-500"
+                  className="w-6 h-6"
+                  style={{ color: `rgb(var(--wedding-lavender-500))` }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -89,7 +102,12 @@ const PageBanner = React.forwardRef<HTMLDivElement, PageBannerProps>(
                   />
                 </svg>
               </div>
-              <p className="text-xs text-rose-400 font-medium">Decorative banner</p>
+              <p
+                className="text-xs font-medium"
+                style={{ color: `rgb(var(--wedding-lavender-400))` }}
+              >
+                Decorative banner
+              </p>
             </div>
           </div>
         )}
