@@ -5,12 +5,12 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Benny & Blue Wedding - June 15, 2024 | RSVP',
-  description: 'Join us for the wedding of Benny and Blue on June 15, 2024. Ceremony at Sunset Gardens, Reception at Grand Ballroom. RSVP by May 1st, 2024.',
-  keywords: 'Benny Blue wedding, June 15 2024, wedding RSVP, Sunset Gardens, Grand Ballroom, Celebration City',
+  title: 'Benny & Blue Wedding - August 22, 2026 | RSVP',
+  description: 'Join us for the wedding of Benny and Blue on August 22, 2026. Ceremony at Sunset Gardens, Reception at Grand Ballroom. RSVP by July 1st, 2026.',
+  keywords: 'Benny Blue wedding, August 22 2026, wedding RSVP, Sunset Gardens, Grand Ballroom, Celebration City',
   authors: [{ name: 'Benny & Blue' }],
   openGraph: {
-    title: 'Benny & Blue Wedding - June 15, 2024',
+    title: 'Benny & Blue Wedding - August 22, 2026',
     description: 'Join us for our special day! RSVP for our wedding celebration.',
     type: 'website',
     locale: 'en_US',

@@ -35,7 +35,7 @@ export default function RSVPPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <main className="min-h-screen bg-gradient-to-br from-wedding-dustyPink-50 to-wedding-lavender-100 dark:from-gray-900 dark:to-gray-800">
       {/* Decorative Banner */}
       <PageBanner
         src="/images/floral-banner.jpg"
@@ -61,10 +61,10 @@ export default function RSVPPage() {
             </h1>
           </div>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-2">
-            Benny <span className="text-blue-600 dark:text-blue-400">&</span> Blue
+            Benny <span className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400">&</span> Blue
           </p>
           <p className="text-gray-500 dark:text-gray-400">
-            Please respond by May 1st, 2024
+            Please respond by July 1st, 2026
           </p>
         </div>
 

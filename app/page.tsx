@@ -4,7 +4,7 @@ import { HeroImage } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
 
 export default function Home() {
-  const weddingDate = new Date('2024-06-15')
+  const weddingDate = new Date('2026-08-22T12:00:00-07:00') // Noon PDT to avoid timezone issues
 
   return (
     <main className="min-h-screen">
@@ -18,12 +18,12 @@ export default function Home() {
       />
 
       {/* Welcome Section */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-16">
+      <div className="bg-gradient-to-br from-wedding-dustyPink-50 to-wedding-lavender-100 dark:from-gray-900 dark:to-gray-800 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
             {/* Names */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-4">
-              Benny <span className="text-blue-600 dark:text-blue-400">&</span> Blue
+              Benny <span className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400">&</span> Blue
             </h1>
 
             {/* Subtitle */}
@@ -36,7 +36,7 @@ export default function Home() {
               <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-200 mb-2">
                 Save the Date
               </p>
-              <p className="text-2xl sm:text-3xl font-semibold text-blue-600 dark:text-blue-400">
+              <p className="text-2xl sm:text-3xl font-semibold text-wedding-dustyPink-600 dark:text-wedding-dustyPink-400">
                 {formatDate(weddingDate)}
               </p>
             </div>
@@ -44,7 +44,7 @@ export default function Home() {
             {/* RSVP Button */}
             <div className="mb-8">
               <Link href="/rsvp">
-                <Button size="lg" className="text-lg px-8 py-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+                <Button size="lg" className="text-lg px-8 py-4">
                   RSVP Now
                 </Button>
               </Link>
@@ -63,7 +63,7 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 gap-8">
               {/* Ceremony */}
-              <div className="text-center p-6 bg-blue-50 dark:bg-gray-700 rounded-lg">
+              <div className="text-center p-6 bg-wedding-dustyPink-50 dark:bg-gray-700 rounded-lg border border-wedding-dustyPink-200">
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                   Ceremony
                 </h3>
@@ -81,7 +81,7 @@ export default function Home() {
               </div>
 
               {/* Reception */}
-              <div className="text-center p-6 bg-indigo-50 dark:bg-gray-700 rounded-lg">
+              <div className="text-center p-6 bg-wedding-lavender-50 dark:bg-gray-700 rounded-lg border border-wedding-lavender-200">
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                   Reception
                 </h3>
@@ -104,19 +104,19 @@ export default function Home() {
       </div>
 
       {/* Call to Action Section */}
-      <div className="bg-blue-600 dark:bg-blue-800 py-16">
+      <div className="bg-wedding-dustyPink-600 dark:bg-wedding-dustyPink-800 py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
             Can&apos;t wait to celebrate with you!
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Please RSVP by May 1st, 2024
+          <p className="text-xl text-wedding-dustyPink-100 mb-8">
+            Please RSVP by July 1st, 2026
           </p>
           <Link href="/rsvp">
             <Button
               size="lg"
               variant="outline"
-              className="text-lg px-8 py-4 bg-white text-blue-600 hover:bg-blue-50 border-white"
+              className="text-lg px-8 py-4 bg-white text-wedding-dustyPink-600 hover:bg-wedding-dustyPink-50 border-white"
             >
               RSVP Today
             </Button>

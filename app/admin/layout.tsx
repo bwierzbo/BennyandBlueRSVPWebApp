@@ -27,7 +27,7 @@ export default function AdminLayout({
                 Wedding Admin
               </h1>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                Benny & Blue - June 15, 2024
+                Benny & Blue - August 22, 2026
               </span>
             </div>
             <Link href="/">
