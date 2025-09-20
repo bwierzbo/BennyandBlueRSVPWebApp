@@ -6,6 +6,55 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  /* Wedding Color Palette - Custom Properties for CSS integration */
+  /* These mirror the Tailwind config hex values but as RGB for use with opacity */
+  --wedding-dusty-pink-50: 253, 242, 248;
+  --wedding-dusty-pink-100: 252, 231, 243;
+  --wedding-dusty-pink-200: 251, 207, 232;
+  --wedding-dusty-pink-300: 249, 168, 212;
+  --wedding-dusty-pink-400: 244, 114, 182;
+  --wedding-dusty-pink-500: 236, 72, 153;
+  --wedding-dusty-pink-600: 219, 39, 119;
+  --wedding-dusty-pink-700: 190, 24, 93;
+  --wedding-dusty-pink-800: 157, 23, 77;
+  --wedding-dusty-pink-900: 131, 24, 67;
+
+  /* Rose Gold Palette */
+  --wedding-rose-gold-50: 253, 247, 240;
+  --wedding-rose-gold-100: 251, 238, 224;
+  --wedding-rose-gold-200: 246, 213, 183;
+  --wedding-rose-gold-300: 240, 187, 141;
+  --wedding-rose-gold-400: 234, 159, 99;
+  --wedding-rose-gold-500: 228, 133, 58;
+  --wedding-rose-gold-600: 214, 103, 46;
+  --wedding-rose-gold-700: 184, 84, 37;
+  --wedding-rose-gold-800: 154, 66, 30;
+  --wedding-rose-gold-900: 124, 51, 24;
+
+  /* Lavender Palette */
+  --wedding-lavender-50: 248, 246, 255;
+  --wedding-lavender-100: 241, 236, 255;
+  --wedding-lavender-200: 224, 212, 255;
+  --wedding-lavender-300: 207, 187, 255;
+  --wedding-lavender-400: 190, 162, 255;
+  --wedding-lavender-500: 173, 137, 255;
+  --wedding-lavender-600: 156, 112, 255;
+  --wedding-lavender-700: 139, 87, 255;
+  --wedding-lavender-800: 122, 62, 255;
+  --wedding-lavender-900: 105, 37, 255;
+
+  /* Base Colors - Refined Grays */
+  --wedding-gray-50: 248, 250, 252;
+  --wedding-gray-100: 241, 245, 249;
+  --wedding-gray-200: 226, 232, 240;
+  --wedding-gray-300: 203, 213, 225;
+  --wedding-gray-400: 148, 163, 184;
+  --wedding-gray-500: 100, 116, 139;
+  --wedding-gray-600: 71, 85, 105;
+  --wedding-gray-700: 51, 65, 85;
+  --wedding-gray-800: 30, 41, 59;
+  --wedding-gray-900: 15, 23, 42;
 }
 
 @media (prefers-color-scheme: dark) {
