@@ -87,14 +87,24 @@ const ImageSection = React.forwardRef<HTMLDivElement, ImageSectionProps>(
         ) : (
           // Fallback when image fails to load
           <div
-            className="rounded-lg shadow-md bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
-            style={{ width: `${width}px`, height: `${height}px` }}
+            className="rounded-lg shadow-md flex items-center justify-center"
+            style={{
+              width: `${width}px`,
+              height: `${height}px`,
+              background: `linear-gradient(to bottom right,
+                rgb(var(--wedding-rose-gold-50)),
+                rgb(var(--wedding-lavender-50)))`
+            }}
             aria-label="Image placeholder"
           >
             <div className="text-center p-6">
-              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-300 flex items-center justify-center">
+              <div
+                className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: `rgb(var(--wedding-rose-gold-300))` }}
+              >
                 <svg
-                  className="w-6 h-6 text-gray-500"
+                  className="w-6 h-6"
+                  style={{ color: `rgb(var(--wedding-rose-gold-600))` }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -108,7 +118,12 @@ const ImageSection = React.forwardRef<HTMLDivElement, ImageSectionProps>(
                   />
                 </svg>
               </div>
-              <p className="text-sm text-gray-500 font-medium">Image not available</p>
+              <p
+                className="text-sm font-medium"
+                style={{ color: `rgb(var(--wedding-rose-gold-600))` }}
+              >
+                Image not available
+              </p>
             </div>
           </div>
         )}
@@ -121,12 +136,18 @@ const ImageSection = React.forwardRef<HTMLDivElement, ImageSectionProps>(
         imagePosition === "top" || imagePosition === "bottom" ? "text-center" : ""
       )}>
         {title && (
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+          <h2
+            className="text-2xl md:text-3xl font-bold mb-4"
+            style={{ color: `rgb(var(--wedding-gray-800))` }}
+          >
             {title}
           </h2>
         )}
         {description && (
-          <div className="text-gray-600 leading-relaxed">
+          <div
+            className="leading-relaxed"
+            style={{ color: `rgb(var(--wedding-gray-600))` }}
+          >
             {typeof description === 'string' ? (
               <p>{description}</p>
             ) : (
@@ -155,13 +176,17 @@ const ImageSection = React.forwardRef<HTMLDivElement, ImageSectionProps>(
                   {title && (
                     <h2
                       id={`section-title-${title.replace(/\s+/g, '-').toLowerCase()}`}
-                      className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+                      className="text-2xl md:text-3xl font-bold mb-4"
+                      style={{ color: `rgb(var(--wedding-gray-800))` }}
                     >
                       {title}
                     </h2>
                   )}
                   {description && (
-                    <div className="text-gray-600 leading-relaxed">
+                    <div
+                      className="leading-relaxed"
+                      style={{ color: `rgb(var(--wedding-gray-600))` }}
+                    >
                       {typeof description === 'string' ? (
                         <p>{description}</p>
                       ) : (
@@ -179,13 +204,17 @@ const ImageSection = React.forwardRef<HTMLDivElement, ImageSectionProps>(
                   {title && (
                     <h2
                       id={`section-title-${title.replace(/\s+/g, '-').toLowerCase()}`}
-                      className="text-2xl md:text-3xl font-bold text-gray-900 mb-4"
+                      className="text-2xl md:text-3xl font-bold mb-4"
+                      style={{ color: `rgb(var(--wedding-gray-800))` }}
                     >
                       {title}
                     </h2>
                   )}
                   {description && (
-                    <div className="text-gray-600 leading-relaxed">
+                    <div
+                      className="leading-relaxed"
+                      style={{ color: `rgb(var(--wedding-gray-600))` }}
+                    >
                       {typeof description === 'string' ? (
                         <p>{description}</p>
                       ) : (
