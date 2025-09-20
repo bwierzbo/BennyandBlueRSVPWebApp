@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { ImageSection } from '@/components/ui'
 
 function ThankYouContent() {
   const searchParams = useSearchParams()
@@ -15,7 +16,20 @@ function ThankYouContent() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950 dark:to-gray-900">
-      <div className="max-w-2xl w-full text-center space-y-8">
+      <div className="max-w-4xl w-full text-center space-y-8">
+
+        {/* Thank You Image Section */}
+        <div className="mb-8">
+          <ImageSection
+            src="/images/thank-you-flowers.jpg"
+            alt="Beautiful flowers expressing gratitude for your RSVP"
+            imagePosition="top"
+            className="max-w-2xl mx-auto"
+            width={800}
+            height={600}
+            priority={true}
+          />
+        </div>
 
         {/* Header Section */}
         <div className="space-y-4">
@@ -29,7 +43,7 @@ function ThankYouContent() {
         </div>
 
         {/* Wedding Details Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 border border-blue-100 dark:border-blue-800">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 border border-blue-100 dark:border-blue-800 max-w-2xl mx-auto">
           <h2 className="text-2xl font-semibold text-blue-900 dark:text-blue-100 mb-4">
             Wedding Details
           </h2>
@@ -43,7 +57,7 @@ function ThankYouContent() {
 
         {/* RSVP Summary (if information is available) */}
         {(guestName || attending || guestCount) && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 md:p-8 border border-blue-200 dark:border-blue-700">
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 md:p-8 border border-blue-200 dark:border-blue-700 max-w-2xl mx-auto">
             <h2 className="text-2xl font-semibold text-blue-900 dark:text-blue-100 mb-4">
               Your RSVP Summary
             </h2>
@@ -65,7 +79,7 @@ function ThankYouContent() {
         )}
 
         {/* Next Steps Section */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 md:p-8 border border-gray-200 dark:border-gray-700">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 md:p-8 border border-gray-200 dark:border-gray-700 max-w-2xl mx-auto">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
             What&apos;s Next?
           </h2>
@@ -77,7 +91,7 @@ function ThankYouContent() {
         </div>
 
         {/* Contact Information */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 border border-gray-200 dark:border-gray-700 max-w-2xl mx-auto">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Contact Us
           </h2>

@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { RSVPForm } from "@/components/rsvp-form"
 import { LazyPerformanceMonitor } from "@/components/lazy-performance-monitor"
-import { Button } from "@/components/ui/button"
+import { Button, PageBanner } from "@/components/ui"
 import { submitRSVPJSON } from "@/lib/actions"
 import type { RSVPFormData } from "@/lib/validations"
 
@@ -34,13 +35,31 @@ export default function RSVPPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-8">
-      <div className="container mx-auto px-4">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      {/* Decorative Banner */}
+      <PageBanner
+        src="/images/floral-banner.jpg"
+        alt="Elegant floral wedding banner with romantic flowers"
+        height={300}
+        className="rounded-b-lg shadow-sm"
+        priority={true}
+      />
+
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            RSVP to Our Wedding
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Image
+              src="/images/rsvp-card-icon.png"
+              alt="RSVP card icon"
+              width={40}
+              height={40}
+              className="w-8 h-8 sm:w-10 sm:h-10"
+            />
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white">
+              RSVP to Our Wedding
+            </h1>
+          </div>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-2">
             Benny <span className="text-blue-600 dark:text-blue-400">&</span> Blue
           </p>
