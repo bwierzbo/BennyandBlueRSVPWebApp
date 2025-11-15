@@ -10,23 +10,29 @@ export default function TravelPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-wedding-dustyPink-50 to-wedding-lavender-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Back Button */}
-      <div className="container mx-auto px-4 pt-6">
-        <Link href="/">
-          <Button variant="outline" size="sm">
-            ← Back to Home
-          </Button>
-        </Link>
-      </div>
+      {/* Hero Banner with Floating Back Button */}
+      <div className="relative">
+        <PageBanner
+          src="/images/lavender-banner.jpg"
+          alt="Beautiful lavender fields"
+          height={400}
+          className="rounded-b-lg shadow-sm"
+          priority={true}
+        />
 
-      {/* Decorative Banner */}
-      <PageBanner
-        src="/images/floral-banner.jpg"
-        alt="Elegant floral wedding banner"
-        height={300}
-        className="rounded-b-lg shadow-sm"
-        priority={true}
-      />
+        {/* Floating Back Button */}
+        <div className="absolute top-6 left-6 z-10">
+          <Link href="/">
+            <Button
+              variant="outline"
+              size="sm"
+              className="backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-white/50 dark:border-gray-700/50 shadow-lg hover:bg-white/90 dark:hover:bg-gray-900/90 transition-all"
+            >
+              ← Back to Home
+            </Button>
+          </Link>
+        </div>
+      </div>
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
