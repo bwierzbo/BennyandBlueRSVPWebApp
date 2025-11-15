@@ -45,13 +45,16 @@ function ThankYouContent() {
         {/* Wedding Details Section */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 border border-wedding-dustyPink-100 dark:border-wedding-dustyPink-800 max-w-2xl mx-auto">
           <h2 className="text-2xl font-semibold text-wedding-dustyPink-900 dark:text-wedding-dustyPink-100 mb-4">
-            Wedding Details
+            Wedding Events
           </h2>
           <div className="space-y-3 text-gray-700 dark:text-gray-300">
             <p><strong>Date:</strong> August 22, 2026</p>
-            <p><strong>Ceremony:</strong> 4:00 PM at Sunset Gardens</p>
-            <p><strong>Reception:</strong> 6:00 PM - 11:00 PM at Grand Ballroom</p>
-            <p><strong>Address:</strong> 123 Wedding Lane, Celebration City, CA 90210</p>
+            <p><strong>Cocktail Hour:</strong> 5:00 PM at The Cidery</p>
+            <p><strong>Ceremony:</strong> 5:00 PM on the Cliffs</p>
+            <p><strong>Reception:</strong> 7:00 PM - 11:00 PM at Lavender Shop</p>
+            <p><strong>Brunch:</strong> August 23, 2026 at 10:00 AM (Location TBD)</p>
+            <p className="pt-2"><strong>Venue:</strong> Olympic Bluffs Cidery & Lavender Farm<br />
+            1025 Finn Hall Road, Port Angeles, WA 98362</p>
           </div>
         </div>
 
@@ -84,8 +87,8 @@ function ThankYouContent() {
             What&apos;s Next?
           </h2>
           <div className="space-y-3 text-left text-gray-700 dark:text-gray-300">
-            <p>• You will receive a confirmation email shortly</p>
-            <p>• Wedding details and directions will be sent closer to the date</p>
+            <p>• Your RSVP has been saved to our database</p>
+            <p>• Check the <a href="/travel" className="text-wedding-dustyPink-600 dark:text-wedding-dustyPink-400 hover:underline">Travel & Accommodations</a> page for venue details and lodging options</p>
             <p>• Feel free to reach out if you have any questions</p>
           </div>
         </div>
@@ -96,8 +99,8 @@ function ThankYouContent() {
             Contact Us
           </h2>
           <div className="space-y-2 text-gray-700 dark:text-gray-300">
-            <p><strong>Email:</strong> <a href="mailto:benny.blue.wedding@example.com" className="text-wedding-dustyPink-600 dark:text-wedding-dustyPink-400 hover:underline">benny.blue.wedding@example.com</a></p>
-            <p><strong>Phone:</strong> <a href="tel:+1234567890" className="text-wedding-dustyPink-600 dark:text-wedding-dustyPink-400 hover:underline">(123) 456-7890</a></p>
+            <p><strong>Email:</strong> <a href="mailto:bwierzbo@gmail.com" className="text-wedding-dustyPink-600 dark:text-wedding-dustyPink-400 hover:underline">bwierzbo@gmail.com</a></p>
+            <p><strong>Phone:</strong> <a href="tel:+15712713751" className="text-wedding-dustyPink-600 dark:text-wedding-dustyPink-400 hover:underline">(571) 271-3751</a></p>
           </div>
         </div>
 
