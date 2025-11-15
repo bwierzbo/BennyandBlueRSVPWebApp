@@ -46,6 +46,10 @@ export const rsvpFormSchema = z.object({
     .string()
     .max(500, "Dietary restrictions must be 500 characters or less")
     .optional(),
+  songRequests: z
+    .string()
+    .max(500, "Song requests must be 500 characters or less")
+    .optional(),
   notes: z
     .string()
     .max(1000, "Notes must be 1000 characters or less")

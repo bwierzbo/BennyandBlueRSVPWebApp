@@ -21,6 +21,8 @@ function generateTestRSVPRecord(id: number, guestNames?: string[] | null): RSVPR
     is_attending: true,
     number_of_guests: guestNames ? guestNames.length : 1,
     guest_names: guestNames || null,
+    dietary_restrictions: null,
+    song_requests: null,
     notes: `Test RSVP ${id}`,
     created_at: new Date(),
     updated_at: new Date()
@@ -104,6 +106,8 @@ function mockDatabaseCreate(createData: RSVPCreateData): RSVP {
     is_attending: createData.isAttending,
     number_of_guests: createData.numberOfGuests,
     guest_names: guestNamesJson ? JSON.parse(guestNamesJson) : null, // Simulate PostgreSQL JSONB parsing
+    dietary_restrictions: null,
+    song_requests: null,
     notes: createData.notes || null,
     created_at: new Date(),
     updated_at: new Date()

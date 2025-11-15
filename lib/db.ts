@@ -114,6 +114,8 @@ export const formatConverters = {
         isAttending: dbRecord.is_attending,
         numberOfGuests: dbRecord.number_of_guests,
         guestNames,
+        dietaryRestrictions: dbRecord.dietary_restrictions,
+        songRequests: dbRecord.song_requests,
         notes: dbRecord.notes,
         createdAt: dbRecord.created_at,
         updatedAt: dbRecord.updated_at
@@ -128,6 +130,8 @@ export const formatConverters = {
         isAttending: dbRecord.is_attending,
         numberOfGuests: dbRecord.number_of_guests,
         guestNames: null,
+        dietaryRestrictions: dbRecord.dietary_restrictions,
+        songRequests: dbRecord.song_requests,
         notes: dbRecord.notes,
         createdAt: dbRecord.created_at,
         updatedAt: dbRecord.updated_at
@@ -153,6 +157,12 @@ export const formatConverters = {
     }
     if ('guestNames' in apiData && apiData.guestNames !== undefined) {
       dbData.guest_names = guestValidation.safeSerializeGuestNames(apiData.guestNames);
+    }
+    if ('dietaryRestrictions' in apiData && apiData.dietaryRestrictions !== undefined) {
+      dbData.dietary_restrictions = apiData.dietaryRestrictions;
+    }
+    if ('songRequests' in apiData && apiData.songRequests !== undefined) {
+      dbData.song_requests = apiData.songRequests;
     }
     if ('notes' in apiData && apiData.notes !== undefined) {
       dbData.notes = apiData.notes;
@@ -201,6 +211,8 @@ export const db = {
           is_attending BOOLEAN NOT NULL DEFAULT false,
           number_of_guests INTEGER NOT NULL DEFAULT 1 CHECK (number_of_guests >= 0),
           guest_names JSONB DEFAULT NULL,
+          dietary_restrictions TEXT,
+          song_requests TEXT,
           notes TEXT,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -288,8 +300,8 @@ export const rsvpDb = {
 
       performanceMonitor.startTiming('database_insert');
       const result = await sql`
-        INSERT INTO rsvp (name, email, is_attending, number_of_guests, guest_names, notes)
-        VALUES (${rsvpData.name}, ${rsvpData.email}, ${rsvpData.isAttending}, ${rsvpData.numberOfGuests}, ${guestNamesJson}, ${rsvpData.notes || null})
+        INSERT INTO rsvp (name, email, is_attending, number_of_guests, guest_names, dietary_restrictions, song_requests, notes)
+        VALUES (${rsvpData.name}, ${rsvpData.email}, ${rsvpData.isAttending}, ${rsvpData.numberOfGuests}, ${guestNamesJson}, ${rsvpData.dietaryRestrictions || null}, ${rsvpData.songRequests || null}, ${rsvpData.notes || null})
         RETURNING *
       `;
       performanceMonitor.endTiming('database_insert');
@@ -387,6 +399,14 @@ export const rsvpDb = {
       if (updateData.guestNames !== undefined) {
         setClauses.push(`guest_names = $${paramCounter++}`);
         values.push(guestValidation.safeSerializeGuestNames(updateData.guestNames));
+      }
+      if (updateData.dietaryRestrictions !== undefined) {
+        setClauses.push(`dietary_restrictions = $${paramCounter++}`);
+        values.push(updateData.dietaryRestrictions);
+      }
+      if (updateData.songRequests !== undefined) {
+        setClauses.push(`song_requests = $${paramCounter++}`);
+        values.push(updateData.songRequests);
       }
       if (updateData.notes !== undefined) {
         setClauses.push(`notes = $${paramCounter++}`);

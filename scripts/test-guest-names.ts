@@ -20,6 +20,8 @@ function createMockRSVPRecord(guestNames: string[] | null = null): RSVPRecord {
     is_attending: true,
     number_of_guests: guestNames ? guestNames.length : 1,
     guest_names: guestNames,
+    dietary_restrictions: null,
+    song_requests: null,
     notes: 'Test RSVP with guest names',
     created_at: new Date('2024-01-01T00:00:00Z'),
     updated_at: new Date('2024-01-01T00:00:00Z')
@@ -80,6 +82,8 @@ async function testGuestNamesFormatting() {
       isAttending: true,
       numberOfGuests: 1,
       guestNames: null,
+      dietaryRestrictions: null,
+      songRequests: null,
       notes: 'Test RSVP with guest names',
       createdAt: new Date('2024-01-01T00:00:00Z'),
       updatedAt: new Date('2024-01-01T00:00:00Z')
@@ -102,6 +106,8 @@ async function testGuestNamesFormatting() {
       isAttending: true,
       numberOfGuests: 3,
       guestNames: ['Alice Johnson', 'Bob Smith', 'Carol Davis'],
+      dietaryRestrictions: null,
+      songRequests: null,
       notes: 'Test RSVP with guest names',
       createdAt: new Date('2024-01-01T00:00:00Z'),
       updatedAt: new Date('2024-01-01T00:00:00Z')

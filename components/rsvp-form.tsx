@@ -314,6 +314,22 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
         </div>
       )}
 
+      {/* Song Requests Field - Only show if attending */}
+      {isAttending && (
+        <div className="space-y-2">
+          <Label htmlFor="songRequests">Song Requests</Label>
+          <Textarea
+            id="songRequests"
+            {...register("songRequests")}
+            placeholder="Any songs you'd like to hear at the reception?"
+            className={errors.songRequests ? "border-red-500" : ""}
+          />
+          {errors.songRequests && (
+            <p className="text-sm text-red-500">{errors.songRequests.message}</p>
+          )}
+        </div>
+      )}
+
       {/* Notes Field */}
       <div className="space-y-2">
         <Label htmlFor="notes">Additional Notes or Messages</Label>

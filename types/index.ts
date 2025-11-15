@@ -8,6 +8,8 @@ export interface RSVPRecord {
   is_attending: boolean;
   number_of_guests: number;
   guest_names: string[] | null;
+  dietary_restrictions: string | null;
+  song_requests: string | null;
   notes: string | null;
   created_at: Date;
   updated_at: Date;
@@ -20,6 +22,8 @@ export interface RSVPCreateData {
   isAttending: boolean;
   numberOfGuests: number;
   guestNames: string[];
+  dietaryRestrictions?: string;
+  songRequests?: string;
   notes?: string;
 }
 
@@ -29,6 +33,8 @@ export interface RSVPUpdateData {
   isAttending?: boolean;
   numberOfGuests?: number;
   guestNames?: string[];
+  dietaryRestrictions?: string;
+  songRequests?: string;
   notes?: string;
 }
 
@@ -40,6 +46,8 @@ export interface RSVP {
   isAttending: boolean;
   numberOfGuests: number;
   guestNames: string[] | null;
+  dietaryRestrictions: string | null;
+  songRequests: string | null;
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;

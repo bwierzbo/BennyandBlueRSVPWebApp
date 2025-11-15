@@ -70,6 +70,26 @@ export function RSVPCard({ rsvp, className }: RSVPCardProps) {
         </div>
       )}
 
+      {/* Dietary Restrictions */}
+      {rsvp.dietaryRestrictions && (
+        <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Dietary Restrictions</p>
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            {rsvp.dietaryRestrictions}
+          </p>
+        </div>
+      )}
+
+      {/* Song Requests */}
+      {rsvp.songRequests && (
+        <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Song Requests</p>
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            {rsvp.songRequests}
+          </p>
+        </div>
+      )}
+
       {/* Notes */}
       {rsvp.notes && (
         <div className="pt-4 border-t border-gray-100 dark:border-gray-700">

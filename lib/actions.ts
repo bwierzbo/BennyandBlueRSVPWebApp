@@ -35,6 +35,8 @@ async function saveRSVPToDatabase(data: RSVPFormData): Promise<{ id: number }> {
     isAttending: data.attendance === "yes",
     numberOfGuests: data.numberOfGuests || 0,
     guestNames: data.guestNames || [],
+    dietaryRestrictions: data.dietaryRestrictions || undefined,
+    songRequests: data.songRequests || undefined,
     notes: data.notes || undefined
   }
 
@@ -118,6 +120,7 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
                      formData.get("guestCount") ? Number(formData.get("guestCount")) : 0,
       guestNames: guestNames.length > 0 ? guestNames : undefined,
       dietaryRestrictions: formData.get("dietaryRestrictions") || undefined,
+      songRequests: formData.get("songRequests") || undefined,
       notes: formData.get("notes") || undefined,
     }
 

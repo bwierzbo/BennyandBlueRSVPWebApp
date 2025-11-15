@@ -42,15 +42,25 @@ export default function AdminLayout({
       {/* Admin Navigation */}
       <nav className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex space-x-6">
+          <div className="flex flex-wrap gap-6">
             <Link
               href="/admin/guests"
               className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               Guest List
             </Link>
-            {/* Placeholder for future admin sections */}
-            {/* TODO: Add authentication middleware when implemented */}
+            <Link
+              href="/admin/dietary"
+              className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+            >
+              Dietary Restrictions
+            </Link>
+            <Link
+              href="/admin/songs"
+              className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            >
+              Song Requests
+            </Link>
           </div>
         </div>
       </nav>
