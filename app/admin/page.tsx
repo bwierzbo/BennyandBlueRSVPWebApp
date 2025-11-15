@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { rsvpDb } from '@/lib/db'
 import { AdminPageSkeleton } from '@/components/admin/loading-skeleton'
+import { TestEmailButton } from '@/components/admin/test-email-button'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard - Benny & Blue Wedding',
@@ -148,6 +149,9 @@ async function DashboardContent() {
             </div>
           </div>
         )}
+
+        {/* Test Email Button */}
+        <TestEmailButton />
 
         {/* Quick Links Grid */}
         <div>
