@@ -100,7 +100,7 @@ export default function Home() {
                   {formatDate(weddingDate)}
                 </p>
                 <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  5:00 PM
+                  6:30 PM
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
                   Salt & Cedar bed and breakfast
