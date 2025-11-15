@@ -87,20 +87,23 @@ export default function Home() {
                   5:00 PM
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
-                  The Cidery
+                  Olympic Bluffs Cidery
                 </p>
               </div>
 
               {/* Ceremony */}
               <div className="text-center p-6 bg-wedding-dustyPink-50 dark:bg-gray-700 rounded-lg border border-wedding-dustyPink-200">
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Ceremony on the Cliffs
+                  Ceremony
                 </h3>
                 <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
                   {formatDate(weddingDate)}
                 </p>
                 <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
                   5:00 PM
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Salt & Cedar bed and breakfast
                 </p>
               </div>
 
@@ -116,7 +119,7 @@ export default function Home() {
                   7:00 PM - 11:00 PM
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Lavender Shop
+                  Olympic Bluffs Lavender Shop
                 </p>
               </div>
 

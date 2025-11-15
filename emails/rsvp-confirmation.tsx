@@ -54,15 +54,15 @@ export default function RSVPConfirmationEmail({
                 </Text>
 
                 <Text style={eventText}>
-                  <strong>🍹 Cocktail Hour:</strong> 5:00 PM at The Cidery
+                  <strong>🍹 Cocktail Hour:</strong> 5:00 PM at Olympic Bluffs Cidery
                 </Text>
 
                 <Text style={eventText}>
-                  <strong>💒 Ceremony:</strong> 5:00 PM on the Cliffs
+                  <strong>💒 Ceremony:</strong> 5:00 PM at Salt & Cedar bed and breakfast
                 </Text>
 
                 <Text style={eventText}>
-                  <strong>🎉 Reception:</strong> 7:00 PM - 11:00 PM at Lavender Shop
+                  <strong>🎉 Reception:</strong> 7:00 PM - 11:00 PM at Olympic Bluffs Lavender Shop
                 </Text>
 
                 <Text style={eventText}>
