@@ -27,7 +27,7 @@ const VenueDisclaimer = memo(function VenueDisclaimer() {
         <div>
           <h4 className="text-sm font-medium text-wedding-roseGold-800 mb-1">Venue Age Restriction</h4>
           <p className="text-sm text-wedding-roseGold-700">
-            Please note that our venue has an age restriction policy. All guests must be 18 years or older.
+            Please note that our venue has an age restriction policy. All guests must be 13 years or older.
             We appreciate your understanding and look forward to celebrating with you!
           </p>
         </div>

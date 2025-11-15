@@ -44,6 +44,12 @@ export default function AdminLayout({
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap gap-6">
             <Link
+              href="/admin"
+              className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              Dashboard
+            </Link>
+            <Link
               href="/admin/guests"
               className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >

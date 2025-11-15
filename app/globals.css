@@ -7,44 +7,70 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 
-  /* Wedding Color Palette - Custom Properties for CSS integration */
+  /* Wedding Color Palette - Amethyst Theme */
   /* These mirror the Tailwind config hex values but as RGB for use with opacity */
-  --wedding-dusty-pink-50: 253, 242, 248;
-  --wedding-dusty-pink-100: 252, 231, 243;
-  --wedding-dusty-pink-200: 251, 207, 232;
-  --wedding-dusty-pink-300: 249, 168, 212;
-  --wedding-dusty-pink-400: 244, 114, 182;
-  --wedding-dusty-pink-500: 236, 72, 153;
-  --wedding-dusty-pink-600: 219, 39, 119;
-  --wedding-dusty-pink-700: 190, 24, 93;
-  --wedding-dusty-pink-800: 157, 23, 77;
-  --wedding-dusty-pink-900: 131, 24, 67;
 
-  /* Rose Gold Palette */
-  --wedding-rose-gold-50: 253, 247, 240;
-  --wedding-rose-gold-100: 251, 238, 224;
-  --wedding-rose-gold-200: 246, 213, 183;
-  --wedding-rose-gold-300: 240, 187, 141;
-  --wedding-rose-gold-400: 234, 159, 99;
-  --wedding-rose-gold-500: 228, 133, 58;
-  --wedding-rose-gold-600: 214, 103, 46;
-  --wedding-rose-gold-700: 184, 84, 37;
-  --wedding-rose-gold-800: 154, 66, 30;
-  --wedding-rose-gold-900: 124, 51, 24;
+  /* Deep Plum/Burgundy (previously Dusty Pink) */
+  --wedding-dusty-pink-50: 253, 242, 247;
+  --wedding-dusty-pink-100: 252, 231, 240;
+  --wedding-dusty-pink-200: 250, 205, 227;
+  --wedding-dusty-pink-300: 245, 163, 204;
+  --wedding-dusty-pink-400: 237, 107, 168;
+  --wedding-dusty-pink-500: 222, 61, 135;
+  --wedding-dusty-pink-600: 198, 33, 103;
+  --wedding-dusty-pink-700: 168, 22, 83;
+  --wedding-dusty-pink-800: 139, 20, 69;
+  --wedding-dusty-pink-900: 107, 31, 65;
 
-  /* Lavender Palette */
-  --wedding-lavender-50: 248, 246, 255;
-  --wedding-lavender-100: 241, 236, 255;
-  --wedding-lavender-200: 224, 212, 255;
-  --wedding-lavender-300: 207, 187, 255;
-  --wedding-lavender-400: 190, 162, 255;
-  --wedding-lavender-500: 173, 137, 255;
-  --wedding-lavender-600: 156, 112, 255;
-  --wedding-lavender-700: 139, 87, 255;
-  --wedding-lavender-800: 122, 62, 255;
-  --wedding-lavender-900: 105, 37, 255;
+  /* Gold/Mustard (previously Rose Gold) */
+  --wedding-rose-gold-50: 253, 250, 244;
+  --wedding-rose-gold-100: 250, 243, 230;
+  --wedding-rose-gold-200: 245, 229, 196;
+  --wedding-rose-gold-300: 237, 209, 154;
+  --wedding-rose-gold-400: 227, 184, 112;
+  --wedding-rose-gold-500: 212, 160, 86;
+  --wedding-rose-gold-600: 193, 137, 64;
+  --wedding-rose-gold-700: 160, 110, 53;
+  --wedding-rose-gold-800: 131, 89, 48;
+  --wedding-rose-gold-900: 110, 74, 42;
 
-  /* Base Colors - Refined Grays */
+  /* Mauve/Light Purple (previously Lavender) */
+  --wedding-lavender-50: 253, 244, 249;
+  --wedding-lavender-100: 252, 233, 244;
+  --wedding-lavender-200: 250, 213, 234;
+  --wedding-lavender-300: 246, 180, 217;
+  --wedding-lavender-400: 238, 136, 192;
+  --wedding-lavender-500: 213, 145, 185;
+  --wedding-lavender-600: 197, 86, 161;
+  --wedding-lavender-700: 169, 63, 133;
+  --wedding-lavender-800: 140, 54, 110;
+  --wedding-lavender-900: 116, 48, 92;
+
+  /* Cream/Beige (NEW) */
+  --wedding-cream-50: 254, 253, 251;
+  --wedding-cream-100: 254, 252, 247;
+  --wedding-cream-200: 253, 249, 237;
+  --wedding-cream-300: 251, 244, 220;
+  --wedding-cream-400: 248, 237, 196;
+  --wedding-cream-500: 245, 238, 215;
+  --wedding-cream-600: 228, 213, 168;
+  --wedding-cream-700: 204, 185, 122;
+  --wedding-cream-800: 176, 155, 87;
+  --wedding-cream-900: 148, 127, 66;
+
+  /* Deep Purple/Violet (NEW) */
+  --wedding-deep-purple-50: 250, 245, 252;
+  --wedding-deep-purple-100: 244, 235, 249;
+  --wedding-deep-purple-200: 232, 214, 242;
+  --wedding-deep-purple-300: 213, 179, 231;
+  --wedding-deep-purple-400: 187, 132, 215;
+  --wedding-deep-purple-500: 157, 83, 195;
+  --wedding-deep-purple-600: 130, 55, 173;
+  --wedding-deep-purple-700: 107, 40, 144;
+  --wedding-deep-purple-800: 89, 35, 117;
+  --wedding-deep-purple-900: 59, 17, 71;
+
+  /* Base Colors - Refined Grays (unchanged) */
   --wedding-gray-50: 248, 250, 252;
   --wedding-gray-100: 241, 245, 249;
   --wedding-gray-200: 226, 232, 240;

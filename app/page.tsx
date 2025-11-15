@@ -11,8 +11,8 @@ export default function Home() {
       {/* Hero Section with Image */}
       <HeroImage
         src="/images/hero.jpg"
-        alt="Benny & Blue's Wedding"
-        overlay="You're Invited - Benny & Blue's Wedding"
+        alt="Kourtney & Ben's Wedding"
+        overlay="You're Invited to Kourtney & Ben's Wedding"
         className="h-screen"
         priority={true}
       />
@@ -23,7 +23,7 @@ export default function Home() {
           <div className="text-center max-w-4xl mx-auto">
             {/* Names */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-4">
-              Benny <span className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400">&</span> Blue
+              Kourtney <span className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400">&</span> Ben
             </h1>
 
             {/* Subtitle */}
@@ -49,34 +49,58 @@ export default function Home() {
                 </Button>
               </Link>
             </div>
+
+            {/* Quick Links */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href="/travel">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Travel & Accommodations
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Wedding Details Section */}
+      {/* Wedding Events Section */}
       <div className="bg-white dark:bg-gray-800 py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">
-              Wedding Details
+              Wedding Events
             </h2>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Ceremony */}
-              <div className="text-center p-6 bg-wedding-dustyPink-50 dark:bg-gray-700 rounded-lg border border-wedding-dustyPink-200">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Cocktail Hour */}
+              <div className="text-center p-6 bg-wedding-roseGold-50 dark:bg-gray-700 rounded-lg border border-wedding-roseGold-200">
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Ceremony
+                  Cocktail Hour
                 </h3>
                 <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
                   {formatDate(weddingDate)}
                 </p>
                 <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  4:00 PM
+                  5:00 PM
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Sunset Gardens<br />
-                  123 Wedding Lane<br />
-                  Celebration City, CA 90210
+                  The Cidery
+                </p>
+              </div>
+
+              {/* Ceremony */}
+              <div className="text-center p-6 bg-wedding-dustyPink-50 dark:bg-gray-700 rounded-lg border border-wedding-dustyPink-200">
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Ceremony on the Cliffs
+                </h3>
+                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                  {formatDate(weddingDate)}
+                </p>
+                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                  5:00 PM
                 </p>
               </div>
 
@@ -89,13 +113,26 @@ export default function Home() {
                   {formatDate(weddingDate)}
                 </p>
                 <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  6:00 PM - 11:00 PM
+                  7:00 PM - 11:00 PM
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Grand Ballroom<br />
-                  Celebration Hotel<br />
-                  456 Party Avenue<br />
-                  Celebration City, CA 90210
+                  Lavender Shop
+                </p>
+              </div>
+
+              {/* Brunch */}
+              <div className="text-center p-6 bg-wedding-cream-50 dark:bg-gray-700 rounded-lg border border-wedding-cream-200">
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Brunch
+                </h3>
+                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                  August 23, 2026
+                </p>
+                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                  10:00 AM
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Location TBD
                 </p>
               </div>
             </div>
