@@ -66,7 +66,7 @@ export default function RSVPConfirmationEmail({
                 </Text>
 
                 <Text style={eventText}>
-                  <strong>🥞 Brunch:</strong> August 23, 2026 at 10:00 AM (Location TBD)
+                  <strong>🥞 Brunch:</strong> August 23, 2026 at 11:00 AM (Location TBD)
                 </Text>
 
                 <Hr style={hr} />

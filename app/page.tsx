@@ -132,7 +132,7 @@ export default function Home() {
                   August 23, 2026
                 </p>
                 <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  10:00 AM
+                  11:00 AM
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
                   Location TBD

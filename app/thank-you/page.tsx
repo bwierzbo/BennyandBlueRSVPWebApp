@@ -52,7 +52,7 @@ function ThankYouContent() {
             <p><strong>Cocktail Hour:</strong> 5:00 PM at Olympic Bluffs Cidery</p>
             <p><strong>Ceremony:</strong> 6:30 PM at Salt & Cedar bed and breakfast</p>
             <p><strong>Reception:</strong> 7:00 PM - 11:00 PM at Olympic Bluffs Lavender Shop</p>
-            <p><strong>Brunch:</strong> August 23, 2026 at 10:00 AM (Location TBD)</p>
+            <p><strong>Brunch:</strong> August 23, 2026 at 11:00 AM (Location TBD)</p>
             <p className="pt-2"><strong>Venue:</strong> Olympic Bluffs Cidery & Lavender Farm<br />
             1025 Finn Hall Road, Port Angeles, WA 98362</p>
           </div>
