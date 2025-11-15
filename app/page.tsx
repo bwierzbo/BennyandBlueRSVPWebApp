@@ -11,8 +11,8 @@ export default function Home() {
       {/* Hero Section with Image */}
       <HeroImage
         src="/images/hero.jpg"
-        alt="Kourtney & Ben's Wedding"
-        overlay="You're Invited to Kourtney & Ben's Wedding"
+        alt="Kourtney & Benjamin's Wedding"
+        overlay="You're Invited to Kourtney & Benjamin's Wedding"
         className="h-screen"
         priority={true}
       />
@@ -23,7 +23,7 @@ export default function Home() {
           <div className="text-center max-w-4xl mx-auto">
             {/* Names */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-4">
-              Kourtney <span className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400">&</span> Ben
+              Kourtney <span className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400">&</span> Benjamin
             </h1>
 
             {/* Subtitle */}

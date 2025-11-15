@@ -6,7 +6,7 @@ export async function POST() {
     // Test email parameters
     const testParams = {
       email: 'bwierzbo@gmail.com',
-      name: 'Ben (Test)',
+      name: 'Benjamin (Test)',
       isAttending: true,
       numberOfGuests: 2,
       guestNames: ['Kourtney (Test)', 'Another Guest (Test)'],

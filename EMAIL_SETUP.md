@@ -56,7 +56,7 @@ By default, Resend sends emails from `onboarding@resend.dev`. To use your own do
 6. Update the `from` field in `lib/email.ts`:
 
 ```typescript
-from: 'Kourtney & Ben <rsvp@yourdomain.com>',
+from: 'Kourtney & Benjamin <rsvp@yourdomain.com>',
 ```
 
 ### 5. Test Email Sending

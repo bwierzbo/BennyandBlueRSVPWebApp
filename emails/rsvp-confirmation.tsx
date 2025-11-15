@@ -33,7 +33,7 @@ export default function RSVPConfirmationEmail({
   return (
     <Html>
       <Head />
-      <Preview>Your RSVP confirmation for Kourtney & Ben's Wedding</Preview>
+      <Preview>Your RSVP confirmation for Kourtney & Benjamin's Wedding</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={h1}>💕 Thank You!</Heading>
@@ -161,7 +161,7 @@ export default function RSVPConfirmationEmail({
 
             <Text style={footer}>
               We can't wait to celebrate with you!<br />
-              — Kourtney & Ben
+              — Kourtney & Benjamin
             </Text>
           </Section>
         </Container>

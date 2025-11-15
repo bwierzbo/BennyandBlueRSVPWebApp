@@ -31,7 +31,7 @@ export async function sendRSVPConfirmation(params: SendRSVPConfirmationParams) {
     }
 
     const { data, error } = await resend.emails.send({
-      from: 'Kourtney & Ben <onboarding@resend.dev>', // Change this after domain verification
+      from: 'Kourtney & Benjamin <onboarding@resend.dev>', // Change this after domain verification
       to: [params.email],
       subject: params.isAttending
         ? "We can't wait to see you at our wedding! 💕"
