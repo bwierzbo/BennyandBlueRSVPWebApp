@@ -13,6 +13,7 @@ import {
 import { enhanceErrorMessages, ERROR_MESSAGES } from "./error-messages"
 import { rsvpDb } from "./db"
 import type { RSVPCreateData } from "../types"
+import { sendRSVPConfirmation, rsvpFormDataToEmailParams } from "./email"
 
 // Database functions
 async function checkEmailExists(email: string, excludeId?: string): Promise<boolean> {
@@ -145,6 +146,15 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
     // Save to database
     const result = await saveRSVPToDatabase(validatedData)
 
+    // Send confirmation email (non-blocking - don't fail if email fails)
+    try {
+      const emailParams = rsvpFormDataToEmailParams(validatedData)
+      await sendRSVPConfirmation(emailParams)
+    } catch (emailError) {
+      // Log error but don't fail the RSVP submission
+      console.error('Failed to send confirmation email:', emailError)
+    }
+
     // Revalidate the relevant pages
     revalidatePath("/")
     revalidatePath("/rsvp")
@@ -210,6 +220,15 @@ export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResu
 
     // Save to database
     const result = await saveRSVPToDatabase(validatedData)
+
+    // Send confirmation email (non-blocking - don't fail if email fails)
+    try {
+      const emailParams = rsvpFormDataToEmailParams(validatedData)
+      await sendRSVPConfirmation(emailParams)
+    } catch (emailError) {
+      // Log error but don't fail the RSVP submission
+      console.error('Failed to send confirmation email:', emailError)
+    }
 
     // Revalidate the relevant pages
     revalidatePath("/")
