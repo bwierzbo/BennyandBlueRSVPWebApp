@@ -50,6 +50,24 @@ export default function Home() {
               </Link>
             </div>
 
+            {/* Venue Address */}
+            <div className="mb-8">
+              <p className="text-lg text-gray-700 dark:text-gray-200 mb-1">
+                Olympic Bluffs Cidery & Lavender Farm
+              </p>
+              <p className="text-gray-600 dark:text-gray-300 mb-2">
+                1025 Finn Hall Road, Port Angeles, WA 98362
+              </p>
+              <a
+                href="https://www.google.com/maps/place/1025+Finn+Hall+Rd,+Port+Angeles,+WA+98362"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400 hover:underline"
+              >
+                View on Google Maps
+              </a>
+            </div>
+
             {/* Quick Links */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/travel">
@@ -103,7 +121,7 @@ export default function Home() {
                   6:30 PM
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Salt & Cedar bed and breakfast
+                  Salt & Cedar Bed and Breakfast
                 </p>
               </div>
 
@@ -124,7 +142,7 @@ export default function Home() {
               </div>
 
               {/* Brunch */}
-              <div className="text-center p-6 bg-wedding-cream-50 dark:bg-gray-700 rounded-lg border border-wedding-cream-200">
+              <div className="text-center p-6 bg-wedding-cream-200 dark:bg-gray-700 rounded-lg border border-wedding-cream-400">
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                   Brunch
                 </h3>
