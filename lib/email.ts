@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { render } from '@react-email/render'
 import RSVPConfirmationEmail from '@/emails/rsvp-confirmation'
 import type { RSVPFormData } from './validations'
 
@@ -30,21 +31,24 @@ export async function sendRSVPConfirmation(params: SendRSVPConfirmationParams) {
       }
     }
 
+    // Render the email template to HTML
+    const emailHtml = await render(RSVPConfirmationEmail({
+      name: params.name,
+      isAttending: params.isAttending,
+      numberOfGuests: params.numberOfGuests,
+      guestNames: params.guestNames,
+      dietaryRestrictions: params.dietaryRestrictions,
+      songRequests: params.songRequests,
+      notes: params.notes,
+    }))
+
     const { data, error } = await resend.emails.send({
       from: 'Kourtney & Benjamin <onboarding@resend.dev>', // Change this after domain verification
       to: [params.email],
       subject: params.isAttending
         ? "We can't wait to see you at our wedding! 💕"
         : 'Thank you for your RSVP response',
-      react: RSVPConfirmationEmail({
-        name: params.name,
-        isAttending: params.isAttending,
-        numberOfGuests: params.numberOfGuests,
-        guestNames: params.guestNames,
-        dietaryRestrictions: params.dietaryRestrictions,
-        songRequests: params.songRequests,
-        notes: params.notes,
-      }),
+      html: emailHtml,
     })
 
     if (error) {
