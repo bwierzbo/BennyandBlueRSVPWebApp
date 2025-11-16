@@ -58,7 +58,7 @@ export default function RSVPConfirmationEmail({
                 </Text>
 
                 <Text style={eventText}>
-                  <strong>💒 Ceremony:</strong> 6:30 PM at Salt & Cedar bed and breakfast
+                  <strong>💒 Ceremony:</strong> 6:30 PM at Salt & Cedar Bed and Breakfast
                 </Text>
 
                 <Text style={eventText}>
