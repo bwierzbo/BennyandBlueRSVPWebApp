@@ -95,13 +95,19 @@ export default function RSVPConfirmationEmail({
                 </Text>
 
                 {guestNames.length > 0 && (
-                  <Text style={text}>
-                    <strong>Guest Names:</strong><br />
-                    • {name} (you)<br />
+                  <>
+                    <Text style={text}>
+                      <strong>Guest Names:</strong>
+                    </Text>
+                    <Text style={text}>
+                      • {name} (you)
+                    </Text>
                     {guestNames.map((guestName, index) => (
-                      `• ${guestName}\n`
-                    )).join('')}
-                  </Text>
+                      <Text key={index} style={text}>
+                        • {guestName}
+                      </Text>
+                    ))}
+                  </>
                 )}
 
                 {dietaryRestrictions && (
