@@ -286,3 +286,31 @@ export async function validateEmailUniqueness(email: string): Promise<Validation
     ])
   }
 }
+
+// Server action to delete an RSVP
+export async function deleteRSVP(id: number): Promise<ValidationResult<boolean | undefined>> {
+  try {
+    const deletedRSVP = await rsvpDb.delete(id)
+
+    if (!deletedRSVP) {
+      return createServerValidationResult(undefined, [
+        createServerValidationError("_form", "RSVP not found")
+      ])
+    }
+
+    // Revalidate relevant pages after deletion
+    revalidatePath("/")
+    revalidatePath("/rsvp")
+    revalidatePath("/admin")
+    revalidatePath("/admin/guests")
+    revalidatePath("/admin/dietary")
+    revalidatePath("/admin/songs")
+
+    return createServerValidationResult(true)
+  } catch (error) {
+    console.error("Error deleting RSVP:", error)
+    return createServerValidationResult(undefined, [
+      createServerValidationError("_form", "Failed to delete RSVP")
+    ])
+  }
+}

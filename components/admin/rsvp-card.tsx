@@ -1,6 +1,7 @@
 import type { RSVP } from '@/types'
 import { StatusBadge } from './status-badge'
 import { GuestList } from './guest-list'
+import { DeleteRSVPButton } from './delete-rsvp-button'
 import { cn } from '@/lib/utils'
 
 interface RSVPCardProps {
@@ -21,8 +22,8 @@ export function RSVPCard({ rsvp, className }: RSVPCardProps) {
       )}
     >
       {/* Header with name and status */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-        <div className="flex items-center space-x-3 mb-2 sm:mb-0">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-3">
+        <div className="flex items-center space-x-3">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {rsvp.name}
           </h3>
@@ -33,16 +34,19 @@ export function RSVPCard({ rsvp, className }: RSVPCardProps) {
             </span>
           )}
         </div>
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          <time dateTime={rsvp.createdAt.toISOString()}>
-            {new Date(rsvp.createdAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
-          </time>
+        <div className="flex flex-col sm:items-end gap-2">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            <time dateTime={rsvp.createdAt.toISOString()}>
+              {new Date(rsvp.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </time>
+          </div>
+          <DeleteRSVPButton rsvpId={rsvp.id} rsvpName={rsvp.name} />
         </div>
       </div>
 
