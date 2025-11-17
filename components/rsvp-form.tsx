@@ -73,73 +73,48 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
 
     // Use memoized values to reduce recalculations
     if (isAttending && currentGuestCount > 0) {
-      // Update guest names array to match guest count
-      const newGuestNames = [...guestNames]
+      // Update guest names array length to match guest count
+      setGuestNames(prevNames => {
+        const newLength = currentGuestCount
+        const currentLength = prevNames.length
 
-      if (currentGuestCount > guestNames.length) {
-        // Add empty slots for new guests efficiently
-        const emptySlots = Array(currentGuestCount - guestNames.length).fill("")
-        newGuestNames.push(...emptySlots)
-      } else if (currentGuestCount < guestNames.length) {
-        // Remove excess guest names
-        newGuestNames.splice(currentGuestCount)
-      }
+        // Only update if the array length needs to change
+        if (newLength === currentLength) {
+          return prevNames
+        }
 
-      // Only update if there's an actual change to prevent unnecessary renders
-      if (JSON.stringify(newGuestNames) !== JSON.stringify(guestNames)) {
-        setGuestNames(newGuestNames)
-        setValue("guestNames", newGuestNames)
-      }
+        if (newLength > currentLength) {
+          // Add empty slots for new guests
+          return [...prevNames, ...Array(newLength - currentLength).fill("")]
+        } else {
+          // Remove excess guest names
+          return prevNames.slice(0, newLength)
+        }
+      })
     } else if (!isAttending || currentGuestCount === 0) {
       // Clear all guest fields when not attending or no guests
-      if (guestNames.length > 0) {
-        setGuestNames([])
-        setValue("guestNames", [])
-      }
+      setGuestNames([])
       if (!isAttending && numberOfGuests !== 0) {
         setValue("numberOfGuests", 0)
       }
     }
 
     endTiming('dynamic_guest_update')
-  }, [isAttending, currentGuestCount, setValue, guestNames, numberOfGuests, startTiming, endTiming])
+  }, [isAttending, currentGuestCount, setValue, numberOfGuests, startTiming, endTiming])
 
-  // Optimized guest name update with performance monitoring
-  const updateGuestName = useCallback((index: number, name: string) => {
-    startTiming('guest_name_update')
-
-    // Use functional update to ensure we have the latest state
-    setGuestNames(currentNames => {
-      const newGuestNames = [...currentNames]
-      newGuestNames[index] = name
-      setValue("guestNames", newGuestNames)
-
-      endTiming('guest_name_update', {
-        index,
-        nameLength: name.length,
-        totalGuests: newGuestNames.length
-      })
-
-      return newGuestNames
-    })
-  }, [setValue, startTiming, endTiming])
-
-  // Memoized guest field component for optimal rendering
-  const GuestField = memo(function GuestField({ index, name, error, onUpdate }: {
+  // Memoized guest field component using register for better performance
+  const GuestField = memo(function GuestField({ index, error }: {
     index: number;
-    name: string;
     error?: any;
-    onUpdate: (index: number, value: string) => void
   }) {
     return (
     <div className="space-y-2 mb-3">
-      <Label htmlFor={`guest-${index}`} className="text-sm">
+      <Label htmlFor={`guestNames.${index}`} className="text-sm">
         Guest {index + 1} Name *
       </Label>
       <Input
-        id={`guest-${index}`}
-        value={name}
-        onChange={(e) => onUpdate(index, e.target.value)}
+        id={`guestNames.${index}`}
+        {...register(`guestNames.${index}` as const)}
         placeholder={`Enter guest ${index + 1} name`}
         className={error ? "border-red-500" : ""}
       />
@@ -158,19 +133,17 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
 
     startTiming('guest_fields_render')
 
-    const fields = guestNames.map((name, index) => (
+    const fields = Array.from({ length: currentGuestCount }, (_, index) => (
       <GuestField
         key={`guest-${index}`}
         index={index}
-        name={name}
         error={errors.guestNames?.[index]}
-        onUpdate={updateGuestName}
       />
     ))
 
-    endTiming('guest_fields_render', { guestCount: guestNames.length })
+    endTiming('guest_fields_render', { guestCount: currentGuestCount })
     return fields
-  }, [guestNames, errors.guestNames, isAttending, currentGuestCount, updateGuestName, startTiming, endTiming, GuestField])
+  }, [currentGuestCount, errors.guestNames, isAttending, startTiming, endTiming, GuestField])
 
   // Optimized form submission with performance monitoring and memory optimization
   const onFormSubmit = useCallback(async (data: any) => {
@@ -180,23 +153,28 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
       setSubmitError(null)
 
       // Memory-optimized form data preparation
-      const formData = memoryMonitor.monitorMemoryDuringOperation('form_data_preparation', () => ({
-        ...data,
-        guestNames: guestNames.length > 0 ? guestNames : undefined // Avoid empty arrays
-      }))
+      const formData = memoryMonitor.monitorMemoryDuringOperation('form_data_preparation', () => {
+        // Filter out empty guest names and ensure we have a clean array
+        const cleanedGuestNames = data.guestNames?.filter((name: string) => name && name.trim().length > 0) || []
+
+        return {
+          ...data,
+          guestNames: cleanedGuestNames.length > 0 ? cleanedGuestNames : undefined
+        }
+      })
 
       await onSubmit(formData as RSVPFormData)
 
       endTiming('form_submission', {
-        hasGuests: guestNames.length > 0,
-        guestCount: guestNames.length,
+        hasGuests: formData.guestNames?.length > 0,
+        guestCount: formData.guestNames?.length || 0,
         formDataSize: JSON.stringify(formData).length
       })
     } catch (error) {
       endTiming('form_submission', { error: true })
       setSubmitError(formatErrorForDisplay(error))
     }
-  }, [guestNames, onSubmit, startTiming, endTiming])
+  }, [onSubmit, startTiming, endTiming])
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6 max-w-lg mx-auto">
