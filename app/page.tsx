@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { HeroImage } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
@@ -94,51 +95,81 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 gap-6">
               {/* Cocktail Hour */}
-              <div className="text-center p-6 bg-wedding-roseGold-50 dark:bg-gray-700 rounded-lg border border-wedding-roseGold-200">
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Cocktail Hour
-                </h3>
-                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  {formatDate(weddingDate)}
-                </p>
-                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  5:00 PM
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Olympic Bluffs Cidery
-                </p>
+              <div className="overflow-hidden bg-wedding-roseGold-50 dark:bg-gray-700 rounded-lg border border-wedding-roseGold-200">
+                <div className="relative h-48 w-full">
+                  <Image
+                    src="/images/home-cidery-building.jpeg"
+                    alt="Olympic Bluffs Cidery building"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="text-center p-6">
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Cocktail Hour
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    {formatDate(weddingDate)}
+                  </p>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    5:00 PM
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Olympic Bluffs Cidery
+                  </p>
+                </div>
               </div>
 
               {/* Ceremony */}
-              <div className="text-center p-6 bg-wedding-dustyPink-50 dark:bg-gray-700 rounded-lg border border-wedding-dustyPink-200">
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Ceremony
-                </h3>
-                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  {formatDate(weddingDate)}
-                </p>
-                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  6:30 PM
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Salt & Cedar Bed and Breakfast
-                </p>
+              <div className="overflow-hidden bg-wedding-dustyPink-50 dark:bg-gray-700 rounded-lg border border-wedding-dustyPink-200">
+                <div className="relative h-48 w-full">
+                  <Image
+                    src="/images/bluffs.jpeg"
+                    alt="Olympic Bluffs ceremony location"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="text-center p-6">
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Ceremony
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    {formatDate(weddingDate)}
+                  </p>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    6:30 PM
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Salt & Cedar Bed and Breakfast
+                  </p>
+                </div>
               </div>
 
               {/* Reception */}
-              <div className="text-center p-6 bg-wedding-lavender-50 dark:bg-gray-700 rounded-lg border border-wedding-lavender-200">
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Reception
-                </h3>
-                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  {formatDate(weddingDate)}
-                </p>
-                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  7:00 PM - 11:00 PM
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Olympic Bluffs Lavender Shop
-                </p>
+              <div className="overflow-hidden bg-wedding-lavender-50 dark:bg-gray-700 rounded-lg border border-wedding-lavender-200">
+                <div className="relative h-48 w-full">
+                  <Image
+                    src="/images/lavender-banner.jpg"
+                    alt="Lavender field reception location"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="text-center p-6">
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Reception
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    {formatDate(weddingDate)}
+                  </p>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    7:00 PM - 11:00 PM
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Olympic Bluffs Lavender Shop
+                  </p>
+                </div>
               </div>
 
               {/* Brunch */}
