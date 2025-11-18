@@ -173,19 +173,29 @@ export default function Home() {
               </div>
 
               {/* Brunch */}
-              <div className="text-center p-6 bg-wedding-cream-200 dark:bg-gray-700 rounded-lg border border-wedding-cream-400">
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Brunch
-                </h3>
-                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  August 23, 2026
-                </p>
-                <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                  11:00 AM
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Location TBD
-                </p>
+              <div className="overflow-hidden bg-wedding-cream-200 dark:bg-gray-700 rounded-lg border border-wedding-cream-400">
+                <div className="relative h-48 w-full bg-gradient-to-br from-wedding-cream-100 to-wedding-cream-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                  <div className="text-center">
+                    <svg className="w-20 h-20 text-wedding-cream-600 dark:text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                    </svg>
+                    <p className="text-sm text-wedding-cream-700 dark:text-gray-300 font-medium">Brunch Details Coming Soon</p>
+                  </div>
+                </div>
+                <div className="text-center p-6">
+                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Brunch
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    August 23, 2026
+                  </p>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    11:00 AM
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Location TBD
+                  </p>
+                </div>
               </div>
             </div>
           </div>
