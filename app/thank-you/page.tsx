@@ -33,8 +33,8 @@ function ThankYouContent() {
 
         {/* Header Section */}
         <div className="space-y-4">
-          <div className="text-6xl">💕</div>
-          <h1 className="text-4xl md:text-5xl font-bold text-wedding-dustyPink-900 dark:text-wedding-dustyPink-100">
+          <div className="text-5xl sm:text-6xl">💕</div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-wedding-dustyPink-900 dark:text-wedding-dustyPink-100">
             Thank You!
           </h1>
           <p className="text-xl text-gray-700 dark:text-gray-300">

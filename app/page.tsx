@@ -14,16 +14,16 @@ export default function Home() {
         src="/images/hero.jpg"
         alt="Kourtney & Benjamin's Wedding"
         overlay="You're Invited to Kourtney & Benjamin's Wedding"
-        className="h-screen"
+        className="min-h-[60vh] md:h-screen"
         priority={true}
       />
 
       {/* Welcome Section */}
-      <div className="bg-gradient-to-br from-wedding-dustyPink-50 to-wedding-lavender-100 dark:from-gray-900 dark:to-gray-800 py-16">
+      <div className="bg-gradient-to-br from-wedding-dustyPink-50 to-wedding-lavender-100 dark:from-gray-900 dark:to-gray-800 py-8 md:py-16">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
             {/* Names */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-4">
               Kourtney <span className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400">&</span> Benjamin
             </h1>
 
@@ -86,7 +86,7 @@ export default function Home() {
       </div>
 
       {/* Wedding Events Section */}
-      <div className="bg-white dark:bg-gray-800 py-16">
+      <div className="bg-white dark:bg-gray-800 py-8 md:py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">
@@ -96,7 +96,7 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-6">
               {/* Cocktail Hour */}
               <div className="overflow-hidden bg-wedding-roseGold-50 dark:bg-gray-700 rounded-lg border border-wedding-roseGold-200">
-                <div className="relative h-48 w-full">
+                <div className="relative h-40 sm:h-48 w-full">
                   <Image
                     src="/images/home-cidery-building.jpeg"
                     alt="Olympic Bluffs Cidery building"
@@ -104,8 +104,8 @@ export default function Home() {
                     className="object-cover"
                   />
                 </div>
-                <div className="text-center p-6">
-                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                <div className="text-center p-4 sm:p-6">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
                     Cocktail Hour
                   </h3>
                   <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
@@ -122,7 +122,7 @@ export default function Home() {
 
               {/* Ceremony */}
               <div className="overflow-hidden bg-wedding-dustyPink-50 dark:bg-gray-700 rounded-lg border border-wedding-dustyPink-200">
-                <div className="relative h-48 w-full">
+                <div className="relative h-40 sm:h-48 w-full">
                   <Image
                     src="/images/bluffs.jpeg"
                     alt="Olympic Bluffs ceremony location"
@@ -130,8 +130,8 @@ export default function Home() {
                     className="object-cover"
                   />
                 </div>
-                <div className="text-center p-6">
-                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                <div className="text-center p-4 sm:p-6">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
                     Ceremony
                   </h3>
                   <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
@@ -148,7 +148,7 @@ export default function Home() {
 
               {/* Reception */}
               <div className="overflow-hidden bg-wedding-lavender-50 dark:bg-gray-700 rounded-lg border border-wedding-lavender-200">
-                <div className="relative h-48 w-full">
+                <div className="relative h-40 sm:h-48 w-full">
                   <Image
                     src="/images/lavender-banner.jpg"
                     alt="Lavender field reception location"
@@ -156,8 +156,8 @@ export default function Home() {
                     className="object-cover"
                   />
                 </div>
-                <div className="text-center p-6">
-                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                <div className="text-center p-4 sm:p-6">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
                     Reception
                   </h3>
                   <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
@@ -174,16 +174,16 @@ export default function Home() {
 
               {/* Brunch */}
               <div className="overflow-hidden bg-wedding-cream-200 dark:bg-gray-700 rounded-lg border border-wedding-cream-400">
-                <div className="relative h-48 w-full bg-gradient-to-br from-wedding-cream-100 to-wedding-cream-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                <div className="relative h-40 sm:h-48 w-full bg-gradient-to-br from-wedding-cream-100 to-wedding-cream-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
                   <div className="text-center">
-                    <svg className="w-20 h-20 text-wedding-cream-600 dark:text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-16 sm:w-20 h-16 sm:h-20 text-wedding-cream-600 dark:text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                     </svg>
-                    <p className="text-sm text-wedding-cream-700 dark:text-gray-300 font-medium">Brunch Details Coming Soon</p>
+                    <p className="text-xs sm:text-sm text-wedding-cream-700 dark:text-gray-300 font-medium">Brunch Details Coming Soon</p>
                   </div>
                 </div>
-                <div className="text-center p-6">
-                  <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                <div className="text-center p-4 sm:p-6">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
                     Brunch
                   </h3>
                   <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
@@ -203,10 +203,10 @@ export default function Home() {
       </div>
 
       {/* Registry Information Section */}
-      <div className="bg-gradient-to-br from-wedding-lavender-50 to-wedding-dustyPink-50 dark:from-gray-800 dark:to-gray-700 py-12">
+      <div className="bg-gradient-to-br from-wedding-lavender-50 to-wedding-dustyPink-50 dark:from-gray-800 dark:to-gray-700 py-8 md:py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-wedding-lavender-200 dark:border-gray-600 p-8">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-wedding-lavender-200 dark:border-gray-600 p-6 sm:p-8">
               <div className="flex justify-center mb-4">
                 <svg className="w-12 h-12 text-wedding-roseGold-600 dark:text-wedding-roseGold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
@@ -227,9 +227,9 @@ export default function Home() {
       </div>
 
       {/* Call to Action Section */}
-      <div className="bg-wedding-dustyPink-600 dark:bg-wedding-dustyPink-800 py-16">
+      <div className="bg-wedding-dustyPink-600 dark:bg-wedding-dustyPink-800 py-8 md:py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
             Can&apos;t wait to celebrate with you!
           </h2>
           <p className="text-xl text-wedding-dustyPink-100 mb-8">

@@ -108,7 +108,7 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
     error?: any;
   }) {
     return (
-    <div className="space-y-2 mb-3">
+    <div className="space-y-2 mb-6">
       <Label htmlFor={`guestNames.${index}`} className="text-sm">
         Guest {index + 1} Name *
       </Label>
@@ -210,24 +210,24 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
       {/* Attendance Field */}
       <div className="space-y-2">
         <Label>Will you be attending? *</Label>
-        <div className="flex gap-4">
-          <label className="flex items-center space-x-2 cursor-pointer">
+        <div className="flex flex-col xs:flex-row gap-3 sm:gap-4">
+          <label className="flex items-center space-x-3 cursor-pointer min-h-[44px] py-2">
             <input
               type="radio"
               value="yes"
               {...register("attendance")}
-              className="w-4 h-4 text-blue-600"
+              className="w-5 h-5 text-blue-600"
             />
-            <span>Yes, I&apos;ll be there!</span>
+            <span className="text-base">Yes, I&apos;ll be there!</span>
           </label>
-          <label className="flex items-center space-x-2 cursor-pointer">
+          <label className="flex items-center space-x-3 cursor-pointer min-h-[44px] py-2">
             <input
               type="radio"
               value="no"
               {...register("attendance")}
-              className="w-4 h-4 text-blue-600"
+              className="w-5 h-5 text-blue-600"
             />
-            <span>Sorry, can&apos;t make it</span>
+            <span className="text-base">Sorry, can&apos;t make it</span>
           </label>
         </div>
         {errors.attendance && (

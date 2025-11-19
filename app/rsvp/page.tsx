@@ -56,7 +56,7 @@ export default function RSVPPage() {
               height={40}
               className="w-8 h-8 sm:w-10 sm:h-10"
             />
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
               RSVP to Our Wedding
             </h1>
           </div>
