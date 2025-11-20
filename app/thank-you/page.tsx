@@ -21,7 +21,7 @@ function ThankYouContent() {
         {/* Thank You Image Section */}
         <div className="mb-8">
           <ImageSection
-            src="/images/thank-you-flowers.jpg"
+            src="/images/thank-you.jpeg"
             alt="Beautiful flowers expressing gratitude for your RSVP"
             imagePosition="top"
             className="max-w-2xl mx-auto"
