@@ -93,14 +93,21 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
       })
     } else if (!isAttending || currentGuestCount === 0) {
       // Clear all guest fields when not attending or no guests
-      setGuestNames([])
+      setGuestNames(prevNames => {
+        // Only update if not already empty to avoid infinite loops
+        if (prevNames.length === 0) {
+          return prevNames
+        }
+        return []
+      })
       if (!isAttending && numberOfGuests !== 0) {
         setValue("numberOfGuests", 0)
       }
     }
 
     endTiming('dynamic_guest_update')
-  }, [isAttending, currentGuestCount, setValue, numberOfGuests, startTiming, endTiming])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAttending, currentGuestCount, setValue, numberOfGuests])
 
   // Memoized guest field component using register for better performance
   const GuestField = memo(function GuestField({ index, error }: {
