@@ -53,7 +53,6 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
     resolver: zodResolver(rsvpFormSchema),
     mode: "onChange" as const,
     defaultValues: {
-      numberOfGuests: 0,
       guestNames: [],
     }
   })
@@ -252,8 +251,10 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
             type="number"
             min="0"
             max="10"
-            {...register("numberOfGuests", { valueAsNumber: true })}
-            placeholder="0"
+            {...register("numberOfGuests", {
+              setValueAs: (v) => v === '' ? undefined : Number(v)
+            })}
+            placeholder="Enter number of guests"
             className={errors.numberOfGuests ? "border-red-500" : ""}
           />
           <p className="text-sm text-gray-500">Maximum 10 guests allowed</p>
