@@ -17,16 +17,21 @@ export default function RSVPPage() {
   const handleSubmit = async (data: RSVPFormData) => {
     setIsSubmitting(true)
     try {
+      console.log('Submitting RSVP...', data)
       const result = await submitRSVPJSON(data)
+      console.log('RSVP submission result:', result)
 
       if (result.success) {
+        console.log('RSVP submitted successfully, redirecting...')
         // Redirect to thank you page on success
         router.push("/thank-you?success=true")
       } else {
+        console.error('RSVP submission failed:', result.errors)
         // Let the form handle displaying errors
         throw new Error(result.errors?.[0]?.message || "Failed to submit RSVP")
       }
     } catch (error) {
+      console.error('RSVP submission error:', error)
       // Re-throw error to let form component handle it
       throw error
     } finally {
