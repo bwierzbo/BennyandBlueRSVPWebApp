@@ -43,7 +43,7 @@ export default function RSVPPage() {
     <main className="min-h-screen bg-gradient-to-br from-wedding-dustyPink-50 to-wedding-lavender-100 dark:from-gray-900 dark:to-gray-800">
       {/* Decorative Banner */}
       <PageBanner
-        src="/images/floral-banner.jpg"
+        src="/images/floral-banner.jpeg"
         alt="Elegant floral wedding banner with romantic flowers"
         height={300}
         className="rounded-b-lg shadow-sm"
