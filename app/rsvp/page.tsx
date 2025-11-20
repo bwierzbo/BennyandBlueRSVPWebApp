@@ -21,14 +21,17 @@ export default function RSVPPage() {
       const result = await submitRSVPJSON(data)
       console.log('RSVP submission result:', result)
 
-      if (result.success) {
-        console.log('RSVP submitted successfully, redirecting...')
-        // Redirect to thank you page on success
-        router.push("/thank-you?success=true")
-      } else {
+      // If we get here, there was a validation error (success redirects)
+      if (result && !result.success) {
         console.error('RSVP submission failed:', result.errors)
         // Let the form handle displaying errors
         throw new Error(result.errors?.[0]?.message || "Failed to submit RSVP")
+      }
+
+      // If result is undefined or success is true but no redirect happened,
+      // something unexpected occurred
+      if (!result) {
+        throw new Error("Unexpected error during submission")
       }
     } catch (error) {
       console.error('RSVP submission error:', error)

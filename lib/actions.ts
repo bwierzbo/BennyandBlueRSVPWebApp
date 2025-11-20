@@ -145,24 +145,28 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
 
     // Save to database
     const result = await saveRSVPToDatabase(validatedData)
+    console.log('[Server Action] Database save successful, result:', result)
 
     // Send confirmation email (non-blocking - don't fail if email fails)
     try {
       const emailParams = rsvpFormDataToEmailParams(validatedData)
       await sendRSVPConfirmation(emailParams)
+      console.log('[Server Action] Confirmation email sent successfully')
     } catch (emailError) {
       // Log error but don't fail the RSVP submission
-      console.error('Failed to send confirmation email:', emailError)
+      console.error('[Server Action] Failed to send confirmation email:', emailError)
     }
 
     // Revalidate the relevant pages
     revalidatePath("/")
     revalidatePath("/rsvp")
 
-    return createServerValidationResult(result)
+    const validationResult = createServerValidationResult(result)
+    console.log('[Server Action] Returning success result:', validationResult)
+    return validationResult
 
   } catch (error) {
-    console.error("RSVP submission error:", error)
+    console.error("[Server Action] RSVP submission error:", error)
 
     // Handle specific error types
     if (error instanceof Error) {
@@ -197,8 +201,8 @@ export async function submitRSVPAndRedirect(formData: FormData): Promise<never> 
   }
 }
 
-// Server action to submit RSVP with JSON data (for API route)
-export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResult<{ id: number } | undefined>> {
+// Server action to submit RSVP with JSON data and redirect on success
+export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResult<{ id: number } | undefined> | never> {
   try {
     // Validate the form data
     const validation = await validateCompleteRSVP(data)
@@ -220,24 +224,28 @@ export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResu
 
     // Save to database
     const result = await saveRSVPToDatabase(validatedData)
+    console.log('[Server Action] Database save successful, result:', result)
 
     // Send confirmation email (non-blocking - don't fail if email fails)
     try {
       const emailParams = rsvpFormDataToEmailParams(validatedData)
       await sendRSVPConfirmation(emailParams)
+      console.log('[Server Action] Confirmation email sent successfully')
     } catch (emailError) {
       // Log error but don't fail the RSVP submission
-      console.error('Failed to send confirmation email:', emailError)
+      console.error('[Server Action] Failed to send confirmation email:', emailError)
     }
 
     // Revalidate the relevant pages
     revalidatePath("/")
     revalidatePath("/rsvp")
 
-    return createServerValidationResult(result)
+    console.log('[Server Action] RSVP submission successful, redirecting to thank you page')
+    // Redirect to thank you page on success
+    redirect("/thank-you?success=true")
 
   } catch (error) {
-    console.error("RSVP submission error:", error)
+    console.error("[Server Action] RSVP submission error:", error)
 
     // Handle specific error types
     if (error instanceof Error) {
