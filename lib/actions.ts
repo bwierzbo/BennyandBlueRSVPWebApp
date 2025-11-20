@@ -245,6 +245,11 @@ export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResu
     redirect("/thank-you?success=true")
 
   } catch (error) {
+    // Re-throw redirect errors - these are not actual errors but Next.js redirect signals
+    if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
+      throw error
+    }
+
     console.error("[Server Action] RSVP submission error:", error)
 
     // Handle specific error types
