@@ -150,7 +150,8 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
 
     endTiming('guest_fields_render', { guestCount: currentGuestCount })
     return fields
-  }, [currentGuestCount, errors.guestNames, isAttending, startTiming, endTiming, GuestField])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentGuestCount, errors.guestNames, isAttending])
 
   // Optimized form submission with performance monitoring and memory optimization
   const onFormSubmit = useCallback(async (data: any) => {
