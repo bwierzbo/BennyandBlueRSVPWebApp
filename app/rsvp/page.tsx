@@ -34,6 +34,10 @@ export default function RSVPPage() {
         throw new Error("Unexpected error during submission")
       }
     } catch (error) {
+      // Don't log or handle redirect errors - they're expected
+      if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
+        throw error
+      }
       console.error('RSVP submission error:', error)
       // Re-throw error to let form component handle it
       throw error

@@ -178,6 +178,10 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
         formDataSize: JSON.stringify(formData).length
       })
     } catch (error) {
+      // Don't catch redirect errors - let them propagate
+      if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
+        throw error
+      }
       endTiming('form_submission', { error: true })
       setSubmitError(formatErrorForDisplay(error))
     }
