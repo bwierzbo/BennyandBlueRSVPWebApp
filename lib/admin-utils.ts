@@ -123,7 +123,7 @@ export const adminUtils = {
    */
   getSubsetStats: (rsvps: RSVP[]): RSVPStats => {
     const attending = rsvps.filter(rsvp => rsvp.isAttending)
-    const totalGuests = attending.reduce((sum, rsvp) => sum + rsvp.numberOfGuests, 0)
+    const totalGuests = rsvps.reduce((sum, rsvp) => sum + rsvp.numberOfGuests, 0)
 
     return {
       total_responses: rsvps.length,
@@ -163,7 +163,7 @@ export const adminUtils = {
     const attendanceRate = adminUtils.calculateAttendanceRate(stats)
     const avgGuests = adminUtils.calculateAverageGuests(stats)
 
-    return `${stats.total_responses} responses received with ${attendanceRate.toFixed(1)}% attendance rate. Expecting ${stats.total_guests} total guests (${avgGuests.toFixed(1)} avg per party).`
+    return `${stats.total_responses} responses received with ${attendanceRate.toFixed(1)}% attendance rate. ${stats.total_guests} total guests across all parties (${avgGuests.toFixed(1)} avg per party).`
   }
 }
 
