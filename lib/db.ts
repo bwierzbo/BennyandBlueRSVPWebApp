@@ -456,7 +456,7 @@ export const rsvpDb = {
           COUNT(*) as total_responses,
           COUNT(CASE WHEN is_attending = true THEN 1 END) as attending_count,
           COUNT(CASE WHEN is_attending = false THEN 1 END) as not_attending_count,
-          COALESCE(SUM(CASE WHEN is_attending = true THEN number_of_guests ELSE 0 END), 0) as total_guests
+          COALESCE(SUM(number_of_guests), 0) as total_guests
         FROM rsvp
       `;
       return result.rows[0];
@@ -478,7 +478,7 @@ export const rsvpDb = {
             COUNT(*) as total_responses,
             COUNT(CASE WHEN is_attending = true THEN 1 END) as attending_count,
             COUNT(CASE WHEN is_attending = false THEN 1 END) as not_attending_count,
-            COALESCE(SUM(CASE WHEN is_attending = true THEN number_of_guests ELSE 0 END), 0) as total_guests,
+            COALESCE(SUM(number_of_guests), 0) as total_guests,
             COUNT(CASE WHEN created_at >= NOW() - INTERVAL '24 hours' THEN 1 END) as recent_submissions
           FROM rsvp
         )
@@ -555,7 +555,7 @@ export const rsvpDb = {
             COUNT(*) as total_responses,
             COUNT(CASE WHEN is_attending = true THEN 1 END) as attending_count,
             COUNT(CASE WHEN is_attending = false THEN 1 END) as not_attending_count,
-            COALESCE(SUM(CASE WHEN is_attending = true THEN number_of_guests ELSE 0 END), 0) as total_guests,
+            COALESCE(SUM(number_of_guests), 0) as total_guests,
             COUNT(CASE WHEN created_at >= NOW() - INTERVAL '24 hours' THEN 1 END) as recent_submissions_24h,
             COUNT(CASE WHEN created_at >= NOW() - INTERVAL '7 days' THEN 1 END) as last_7_days,
             COUNT(CASE WHEN created_at >= NOW() - INTERVAL '30 days' THEN 1 END) as last_30_days

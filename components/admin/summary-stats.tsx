@@ -35,7 +35,7 @@ export function SummaryStats({ stats, className }: SummaryStatsProps) {
       title: 'Total Guests',
       value: stats.total_guests,
       color: 'purple',
-      description: 'Total expected attendees'
+      description: 'Sum of all party sizes'
     }
   ]
 

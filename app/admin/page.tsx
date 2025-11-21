@@ -86,13 +86,13 @@ async function DashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                  Total Guests
+                  Total Guests (All Parties)
                 </p>
                 <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
                   {stats.total_guests}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Expected attendees
+                  Sum of all party sizes
                 </p>
               </div>
               <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">

@@ -89,11 +89,36 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', '"Playfair Display"', 'Georgia', 'serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      keyframes: {
+        'fade-in-up': {
+          '0%': { opacity: '0', transform: 'translateY(16px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'slow-pan': {
+          '0%': { transform: 'scale(1) translateY(0)' },
+          '100%': { transform: 'scale(1.05) translateY(-6px)' },
+        },
+        'float-soft': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
+        'underline-pulse': {
+          '0%, 100%': { textDecorationColor: 'rgba(212, 160, 86, 0.35)' },
+          '50%': { textDecorationColor: 'rgba(212, 160, 86, 0.9)' },
+        },
+      },
+      animation: {
+        'fade-in-up': 'fade-in-up 0.7s ease-out both',
+        'slow-pan': 'slow-pan 14s ease-in-out infinite alternate',
+        'float-soft': 'float-soft 6s ease-in-out infinite',
+        'underline-pulse': 'underline-pulse 2.4s ease-in-out infinite',
       },
     },
   },
