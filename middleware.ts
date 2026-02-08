@@ -8,15 +8,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  const adminEmail = process.env.ADMIN_EMAIL
   const adminPassword = process.env.ADMIN_PASSWORD
-  if (!adminPassword) {
-    console.error('ADMIN_PASSWORD environment variable is not set')
+  if (!adminEmail || !adminPassword) {
+    console.error('ADMIN_EMAIL or ADMIN_PASSWORD environment variable is not set')
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
   const authCookie = request.cookies.get('admin-auth')?.value
 
-  if (authCookie !== adminPassword) {
+  if (authCookie !== `${adminEmail}:${adminPassword}`) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
