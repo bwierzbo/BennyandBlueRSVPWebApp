@@ -19,7 +19,7 @@
     "@react-email/render": "^2.0.0",
     "@vercel/postgres": "^0.9.0",
     "clsx": "^2.0.0",
-    "next": "^15.0.0",
+    "next": "15.0.7",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-email": "^5.0.4",
