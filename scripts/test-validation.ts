@@ -20,6 +20,7 @@ async function runValidationTests() {
     guestNames: ['Jane Doe', 'Bob Smith'],
     dietaryRestrictions: 'Vegetarian',
     notes: 'Looking forward to celebrating!',
+    website: '',
   }
 
   const validResult = await validateRSVPForm(validData)

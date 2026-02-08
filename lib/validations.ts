@@ -5,7 +5,8 @@ const emailSchema = z
   .string()
   .min(1, "Email is required")
   .email("Please enter a valid email address")
-  .max(254, "Email must be 254 characters or less"); // RFC 5321 limit
+  .max(254, "Email must be 254 characters or less") // RFC 5321 limit
+  .transform(email => email.toLowerCase().trim());
 
 const nameSchema = z
   .string()
@@ -45,15 +46,19 @@ export const rsvpFormSchema = z.object({
   dietaryRestrictions: z
     .string()
     .max(500, "Dietary restrictions must be 500 characters or less")
-    .optional(),
+    .optional()
+    .transform(val => val?.trim() || undefined),
   songRequests: z
     .string()
     .max(500, "Song requests must be 500 characters or less")
-    .optional(),
+    .optional()
+    .transform(val => val?.trim() || undefined),
   notes: z
     .string()
     .max(1000, "Notes must be 1000 characters or less")
-    .optional(),
+    .optional()
+    .transform(val => val?.trim() || undefined),
+  website: z.string().max(0, "").optional().default(""),
 }).refine((data) => {
   // When attending with guests, guest names must be provided
   if (data.attendance === "yes" && data.numberOfGuests > 0) {

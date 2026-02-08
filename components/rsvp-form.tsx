@@ -197,9 +197,11 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
           {...register("name")}
           placeholder="Enter your full name"
           className={errors.name ? "border-red-500" : ""}
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? "name-error" : undefined}
         />
         {errors.name && (
-          <p className="text-sm text-red-500">{errors.name.message}</p>
+          <p id="name-error" className="text-sm text-red-500" aria-live="polite">{errors.name.message}</p>
         )}
       </div>
 
@@ -212,15 +214,23 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
           {...register("email")}
           placeholder="Enter your email address"
           className={errors.email ? "border-red-500" : ""}
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? "email-error" : undefined}
         />
         {errors.email && (
-          <p className="text-sm text-red-500">{errors.email.message}</p>
+          <p id="email-error" className="text-sm text-red-500" aria-live="polite">{errors.email.message}</p>
         )}
       </div>
 
+      {/* Honeypot field - hidden from real users, catches bots */}
+      <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
+        <label htmlFor="website">Website</label>
+        <input {...register("website")} id="website" tabIndex={-1} autoComplete="off" />
+      </div>
+
       {/* Attendance Field */}
-      <div className="space-y-2">
-        <Label>Will you be attending? *</Label>
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Will you be attending? *</legend>
         <div className="flex flex-col xs:flex-row gap-3 sm:gap-4">
           <label className="flex items-center space-x-3 cursor-pointer min-h-[44px] py-2">
             <input
@@ -228,6 +238,7 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
               value="yes"
               {...register("attendance")}
               className="w-5 h-5 text-blue-600"
+              aria-describedby={errors.attendance ? "attendance-error" : undefined}
             />
             <span className="text-base">Yes, I&apos;ll be there!</span>
           </label>
@@ -237,14 +248,15 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
               value="no"
               {...register("attendance")}
               className="w-5 h-5 text-blue-600"
+              aria-describedby={errors.attendance ? "attendance-error" : undefined}
             />
             <span className="text-base">Sorry, can&apos;t make it</span>
           </label>
         </div>
         {errors.attendance && (
-          <p className="text-sm text-red-500">{errors.attendance.message}</p>
+          <p id="attendance-error" className="text-sm text-red-500" aria-live="polite">{errors.attendance.message}</p>
         )}
-      </div>
+      </fieldset>
 
       {/* Guest Count Field - Only show if attending */}
       {isAttending && (
@@ -260,10 +272,12 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
             })}
             placeholder="Enter number of guests"
             className={errors.numberOfGuests ? "border-red-500" : ""}
+            aria-invalid={!!errors.numberOfGuests}
+            aria-describedby={errors.numberOfGuests ? "numberOfGuests-error" : undefined}
           />
           <p className="text-sm text-gray-500">Maximum 10 guests allowed</p>
           {errors.numberOfGuests && (
-            <p className="text-sm text-red-500">{errors.numberOfGuests.message}</p>
+            <p id="numberOfGuests-error" className="text-sm text-red-500" aria-live="polite">{errors.numberOfGuests.message}</p>
           )}
         </div>
       )}
@@ -298,9 +312,11 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
             {...register("dietaryRestrictions")}
             placeholder="Please let us know about any dietary restrictions or allergies"
             className={errors.dietaryRestrictions ? "border-red-500" : ""}
+            aria-invalid={!!errors.dietaryRestrictions}
+            aria-describedby={errors.dietaryRestrictions ? "dietaryRestrictions-error" : undefined}
           />
           {errors.dietaryRestrictions && (
-            <p className="text-sm text-red-500">{errors.dietaryRestrictions.message}</p>
+            <p id="dietaryRestrictions-error" className="text-sm text-red-500" aria-live="polite">{errors.dietaryRestrictions.message}</p>
           )}
         </div>
       )}
@@ -314,9 +330,11 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
             {...register("songRequests")}
             placeholder="Any songs you'd like to hear at the reception?"
             className={errors.songRequests ? "border-red-500" : ""}
+            aria-invalid={!!errors.songRequests}
+            aria-describedby={errors.songRequests ? "songRequests-error" : undefined}
           />
           {errors.songRequests && (
-            <p className="text-sm text-red-500">{errors.songRequests.message}</p>
+            <p id="songRequests-error" className="text-sm text-red-500" aria-live="polite">{errors.songRequests.message}</p>
           )}
         </div>
       )}
@@ -329,15 +347,17 @@ export function RSVPForm({ onSubmit, isSubmitting = false }: RSVPFormProps) {
           {...register("notes")}
           placeholder="Any special messages for the happy couple?"
           className={errors.notes ? "border-red-500" : ""}
+          aria-invalid={!!errors.notes}
+          aria-describedby={errors.notes ? "notes-error" : undefined}
         />
         {errors.notes && (
-          <p className="text-sm text-red-500">{errors.notes.message}</p>
+          <p id="notes-error" className="text-sm text-red-500" aria-live="polite">{errors.notes.message}</p>
         )}
       </div>
 
       {/* Submit Error */}
       {submitError && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-md" role="alert">
           <p className="text-sm text-red-700">{submitError}</p>
         </div>
       )}

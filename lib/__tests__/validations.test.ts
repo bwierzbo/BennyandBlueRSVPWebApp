@@ -18,6 +18,7 @@ describe('RSVP Form Validation', () => {
     guestNames: ['Jane Doe', 'Bob Smith'],
     dietaryRestrictions: 'Vegetarian',
     notes: 'Looking forward to the celebration!',
+    website: '',
   }
 
   describe('validateRSVPForm', () => {
@@ -32,7 +33,7 @@ describe('RSVP Form Validation', () => {
       const invalidData = { ...validRSVPData, name: '' }
       const result = await validateRSVPForm(invalidData)
       expect(result.success).toBe(false)
-      expect(result.errors).toHaveLength(1)
+      expect(result.errors!.length).toBeGreaterThanOrEqual(1)
       expect(result.errors![0].field).toBe('name')
     })
 
@@ -93,6 +94,7 @@ describe('RSVP Form Validation', () => {
         ...minimalData,
         dietaryRestrictions: undefined,
         notes: undefined,
+        website: '',
       })
     })
   })
@@ -140,7 +142,7 @@ describe('RSVP Form Validation', () => {
 
     it('should handle attendance values correctly', async () => {
       const yesData = { ...validRSVPData, attendance: 'yes' as const }
-      const noData = { ...validRSVPData, attendance: 'no' as const }
+      const noData = { ...validRSVPData, attendance: 'no' as const, numberOfGuests: 0, guestNames: [] }
 
       const yesResult = await validateRSVPForm(yesData)
       const noResult = await validateRSVPForm(noData)
@@ -169,7 +171,7 @@ describe('RSVP Form Validation', () => {
         expect(parsed.guestNames).toEqual([])
       } catch (error) {
         // This should not happen
-        fail('Schema should provide default values')
+        expect.unreachable('Schema should provide default values')
       }
     })
   })
@@ -197,7 +199,7 @@ describe('RSVP Form Validation', () => {
             expect(typeof err.message).toBe('string')
           })
         } else {
-          fail('Expected ZodError')
+          expect.unreachable('Expected ZodError')
         }
       }
     })

@@ -27,7 +27,7 @@ export default function Home() {
   const weddingDate = new Date('2026-08-22T12:00:00-07:00') // Noon PDT to avoid timezone issues
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_20%_20%,rgba(212,160,86,0.08),transparent_35%),_radial-gradient(circle_at_80%_10%,rgba(213,145,185,0.08),transparent_30%),_linear-gradient(to_bottom_right,rgba(253,244,249,0.8),rgba(254,252,247,0.85))] dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-900 dark:to-gray-800">
+    <main id="main-content" className="min-h-screen bg-[radial-gradient(circle_at_20%_20%,rgba(212,160,86,0.08),transparent_35%),_radial-gradient(circle_at_80%_10%,rgba(213,145,185,0.08),transparent_30%),_linear-gradient(to_bottom_right,rgba(253,244,249,0.8),rgba(254,252,247,0.85))] dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-900 dark:to-gray-800">
       {/* Hero Section with Image */}
       <HeroImage
         src="/images/hero.jpg"
@@ -92,7 +92,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/travel">
                 <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -204,8 +204,8 @@ export default function Home() {
                 <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/50 via-transparent to-wedding-cream-200/70" />
                 <div className="relative h-40 sm:h-48 w-full bg-gradient-to-br from-wedding-cream-100 to-wedding-cream-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
                   <div className="text-center">
-                    <svg className="w-16 sm:w-20 h-16 sm:h-20 text-wedding-cream-600 dark:text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm00V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                    <svg className="w-16 sm:w-20 h-16 sm:h-20 text-wedding-cream-600 dark:text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                     </svg>
                     <p className="text-xs sm:text-sm text-wedding-cream-700 dark:text-gray-300 font-medium">Brunch Details Coming Soon</p>
                   </div>
@@ -239,19 +239,27 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-wedding-lavender-200 dark:border-gray-600 p-6 sm:p-8 animate-fade-in-up">
               <div className="flex justify-center mb-4">
-                <svg className="w-12 h-12 text-wedding-roseGold-600 dark:text-wedding-roseGold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-12 h-12 text-wedding-roseGold-600 dark:text-wedding-roseGold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                 </svg>
               </div>
               <h2 className="text-2xl sm:text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-                Registry Information
+                Registry
               </h2>
-              <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                Our wedding registry will be available in <strong>February 2026</strong>
+              <p className="text-lg text-gray-700 dark:text-gray-200 mb-6">
+                Your presence is our greatest gift! If you&apos;d like to celebrate us further, we&apos;ve set up a Honeyfund registry.
               </p>
-              <p className="text-gray-600 dark:text-gray-400">
-                (6 months prior to the wedding)
-              </p>
+              <a
+                href="https://www.honeyfund.com/site/wierzbanowski-bilyeu-08-22-2026"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-8 py-3 bg-wedding-roseGold-500 hover:bg-wedding-roseGold-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                View Our Registry
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>

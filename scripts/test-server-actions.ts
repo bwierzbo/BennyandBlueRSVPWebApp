@@ -50,7 +50,8 @@ async function testServerActions() {
       attendance: 'yes' as const,
       numberOfGuests: 3,
       guestNames: ['Charlie Brown', 'Diana Prince', 'Edward King'],
-      notes: 'Excited to celebrate with you!'
+      notes: 'Excited to celebrate with you!',
+      website: '',
     }
 
     const result = await submitRSVPJSON(jsonData)
@@ -90,7 +91,8 @@ async function testServerActions() {
       attendance: 'yes' as const,
       numberOfGuests: 2,
       guestNames: [], // Empty array when guests expected
-      notes: 'This should fail validation'
+      notes: 'This should fail validation',
+      website: '',
     }
 
     const result = await submitRSVPJSON(jsonData)
@@ -134,7 +136,8 @@ async function testServerActions() {
       attendance: 'yes' as const,
       numberOfGuests: 12,
       guestNames,
-      notes: 'Too many guests'
+      notes: 'Too many guests',
+      website: '',
     }
 
     const result = await submitRSVPJSON(jsonData)
@@ -175,7 +178,8 @@ async function testServerActions() {
       attendance: 'yes' as const,
       numberOfGuests: 1,
       guestNames: ['Guest@#$%'], // Invalid characters
-      notes: 'Invalid guest name characters'
+      notes: 'Invalid guest name characters',
+      website: '',
     }
 
     const result = await submitRSVPJSON(jsonData)
@@ -196,7 +200,8 @@ async function testServerActions() {
       attendance: 'yes' as const,
       numberOfGuests: 0,
       guestNames: [],
-      notes: 'Coming alone'
+      notes: 'Coming alone',
+      website: '',
     }
 
     const result = await submitRSVPJSON(jsonData)
@@ -256,7 +261,8 @@ async function testServerActions() {
       attendance: 'yes' as const,
       numberOfGuests: 1,
       guestNames: ['Duplicate Guest'],
-      notes: 'This should fail due to duplicate email'
+      notes: 'This should fail due to duplicate email',
+      website: '',
     }
 
     const result = await submitRSVPJSON(jsonData)

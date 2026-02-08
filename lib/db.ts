@@ -272,7 +272,8 @@ export const db = {
 // RSVP-specific database operations
 export const rsvpDb = {
   // Create a new RSVP entry with performance monitoring
-  create: measurePerformance('rsvp_create', async (rsvpData: RSVPCreateData): Promise<RSVP> => {
+  // Uses INSERT ... ON CONFLICT to eliminate TOCTOU race conditions
+  create: measurePerformance('rsvp_create', async (rsvpData: RSVPCreateData): Promise<RSVP | null> => {
     try {
       performanceMonitor.startTiming('rsvp_validation');
 
@@ -302,9 +303,15 @@ export const rsvpDb = {
       const result = await sql`
         INSERT INTO rsvp (name, email, is_attending, number_of_guests, guest_names, dietary_restrictions, song_requests, notes)
         VALUES (${rsvpData.name}, ${rsvpData.email}, ${rsvpData.isAttending}, ${rsvpData.numberOfGuests}, ${guestNamesJson}, ${rsvpData.dietaryRestrictions || null}, ${rsvpData.songRequests || null}, ${rsvpData.notes || null})
+        ON CONFLICT (email) DO NOTHING
         RETURNING *
       `;
       performanceMonitor.endTiming('database_insert');
+
+      // If no rows returned, email already exists (conflict)
+      if (result.rows.length === 0) {
+        return null;
+      }
 
       performanceMonitor.startTiming('format_conversion');
       const formattedResult = formatConverters.dbToApi(result.rows[0] as RSVPRecord);
@@ -322,9 +329,9 @@ export const rsvpDb = {
     try {
       performanceMonitor.startTiming('email_lookup');
 
-      // Optimized query that uses email index for faster lookup
+      // Case-insensitive email lookup for defense-in-depth
       const result = await sql`
-        SELECT * FROM rsvp WHERE email = ${email} LIMIT 1
+        SELECT * FROM rsvp WHERE LOWER(email) = LOWER(${email}) LIMIT 1
       `;
 
       performanceMonitor.endTiming('email_lookup', {

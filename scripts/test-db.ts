@@ -32,6 +32,9 @@ async function testDatabase() {
       guestNames: ['Guest 1', 'Guest 2'],
       notes: 'Test RSVP entry'
     });
+    if (!testRSVP) {
+      throw new Error('RSVP creation returned null (email conflict)');
+    }
     console.log('✅ RSVP created:', testRSVP);
 
     // Test 3: Get RSVP by email

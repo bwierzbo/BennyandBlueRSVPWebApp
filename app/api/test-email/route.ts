@@ -1,8 +1,18 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { sendRSVPConfirmation } from '@/lib/email'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request)
+    const limiter = rateLimit(ip, 3, 60_000)
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again in a minute.' },
+        { status: 429 }
+      )
+    }
+
     // Test email parameters
     const testParams = {
       email: 'bwierzbo@gmail.com',

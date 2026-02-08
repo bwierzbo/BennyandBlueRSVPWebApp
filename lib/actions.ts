@@ -13,7 +13,7 @@ import {
 import { enhanceErrorMessages, ERROR_MESSAGES } from "./error-messages"
 import { rsvpDb } from "./db"
 import type { RSVPCreateData } from "../types"
-import { sendRSVPConfirmation, rsvpFormDataToEmailParams } from "./email"
+import { sendRSVPConfirmation, sendAdminNotification, rsvpFormDataToEmailParams } from "./email"
 
 // Database functions
 async function checkEmailExists(email: string, excludeId?: string): Promise<boolean> {
@@ -43,14 +43,25 @@ async function saveRSVPToDatabase(data: RSVPFormData): Promise<{ id: number }> {
 
   try {
     const savedRSVP = await rsvpDb.create(dbData)
+
+    // If create returns null, the email already exists (ON CONFLICT DO NOTHING)
+    if (!savedRSVP) {
+      throw new Error("This email has already been used to RSVP. If you need to update your response, please contact us.")
+    }
+
     return { id: savedRSVP.id }
   } catch (error) {
     console.error("Database save error:", error)
 
+    // Re-throw our own conflict error as-is
+    if (error instanceof Error && error.message.includes("already been used to RSVP")) {
+      throw error
+    }
+
     // Check for specific database constraint errors
     if (error instanceof Error) {
       if (error.message.includes("unique constraint") || error.message.includes("duplicate key")) {
-        throw new Error("Email address is already registered for an RSVP")
+        throw new Error("This email has already been used to RSVP. If you need to update your response, please contact us.")
       }
       if (error.message.includes("Invalid guest names") || error.message.includes("Invalid guest count")) {
         throw new Error(error.message)
@@ -123,6 +134,7 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
       dietaryRestrictions: formData.get("dietaryRestrictions") || undefined,
       songRequests: formData.get("songRequests") || undefined,
       notes: formData.get("notes") || undefined,
+      website: formData.get("website") || "",
     }
 
     // Validate the form data
@@ -134,6 +146,11 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
     }
 
     const validatedData = validation.data!
+
+    // Honeypot check: if website field has a value, silently return fake success
+    if (validatedData.website) {
+      return createServerValidationResult({ id: 0 })
+    }
 
     // Check for email uniqueness
     const emailExists = await checkEmailExists(validatedData.email)
@@ -157,6 +174,19 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
       console.error('[Server Action] Failed to send confirmation email:', emailError)
     }
 
+    // Send admin notification (non-blocking - don't fail if notification fails)
+    try {
+      await sendAdminNotification({
+        name: validatedData.name,
+        email: validatedData.email,
+        isAttending: validatedData.attendance === "yes",
+        numberOfGuests: validatedData.numberOfGuests || 0,
+        dietaryRestrictions: validatedData.dietaryRestrictions,
+      })
+    } catch (notifyError) {
+      console.error('[Server Action] Failed to send admin notification:', notifyError)
+    }
+
     // Revalidate the relevant pages
     revalidatePath("/")
     revalidatePath("/rsvp")
@@ -170,7 +200,7 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
 
     // Handle specific error types
     if (error instanceof Error) {
-      if (error.message.includes("Email address is already registered")) {
+      if (error.message.includes("already been used to RSVP") || error.message.includes("Email address is already registered")) {
         return createServerValidationResult(undefined, [
           createServerValidationError("email", ERROR_MESSAGES.EMAIL_ALREADY_EXISTS)
         ])
@@ -214,6 +244,11 @@ export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResu
 
     const validatedData = validation.data!
 
+    // Honeypot check: if website field has a value, silently redirect (fake success)
+    if (validatedData.website) {
+      redirect("/thank-you?success=true")
+    }
+
     // Check for email uniqueness
     const emailExists = await checkEmailExists(validatedData.email)
     if (emailExists) {
@@ -236,6 +271,19 @@ export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResu
       console.error('[Server Action] Failed to send confirmation email:', emailError)
     }
 
+    // Send admin notification (non-blocking - don't fail if notification fails)
+    try {
+      await sendAdminNotification({
+        name: validatedData.name,
+        email: validatedData.email,
+        isAttending: validatedData.attendance === "yes",
+        numberOfGuests: validatedData.numberOfGuests || 0,
+        dietaryRestrictions: validatedData.dietaryRestrictions,
+      })
+    } catch (notifyError) {
+      console.error('[Server Action] Failed to send admin notification:', notifyError)
+    }
+
     // Revalidate the relevant pages
     revalidatePath("/")
     revalidatePath("/rsvp")
@@ -254,7 +302,7 @@ export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResu
 
     // Handle specific error types
     if (error instanceof Error) {
-      if (error.message.includes("Email address is already registered")) {
+      if (error.message.includes("already been used to RSVP") || error.message.includes("Email address is already registered")) {
         return createServerValidationResult(undefined, [
           createServerValidationError("email", ERROR_MESSAGES.EMAIL_ALREADY_EXISTS)
         ])

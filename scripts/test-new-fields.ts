@@ -25,6 +25,9 @@ async function testNewFields() {
       songRequests: 'Don\'t Stop Believin\' by Journey',
       notes: 'Looking forward to the celebration!'
     });
+    if (!testRSVP) {
+      throw new Error('RSVP creation returned null (email conflict)');
+    }
     console.log('✅ RSVP created successfully:');
     console.log('   - Dietary Restrictions:', testRSVP.dietaryRestrictions);
     console.log('   - Song Requests:', testRSVP.songRequests);

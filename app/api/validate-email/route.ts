@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import { validateEmailUniqueness } from "@/lib/actions"
+import { rateLimit, getClientIp } from "@/lib/rate-limit"
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request)
+    const limiter = rateLimit(ip, 10, 60_000)
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again in a minute." },
+        { status: 429 }
+      )
+    }
+
     const { email } = await request.json()
 
     if (!email || typeof email !== "string") {
