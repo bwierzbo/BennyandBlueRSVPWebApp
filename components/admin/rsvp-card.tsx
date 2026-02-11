@@ -59,7 +59,7 @@ export function RSVPCard({ rsvp, className }: RSVPCardProps) {
         <div>
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Party Size</p>
           <p className="text-gray-900 dark:text-white">
-            {rsvp.numberOfGuests} guest{rsvp.numberOfGuests !== 1 ? 's' : ''}
+            {rsvp.isAttending ? rsvp.numberOfGuests + 1 : 0} guest{(rsvp.isAttending ? rsvp.numberOfGuests + 1 : 0) !== 1 ? 's' : ''}
           </p>
         </div>
       </div>

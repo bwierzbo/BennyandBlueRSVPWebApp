@@ -150,7 +150,7 @@ export async function sendAdminNotification(rsvpData: {
     `Name: ${rsvpData.name}`,
     `Email: ${rsvpData.email}`,
     `Attending: ${attendingText}`,
-    `Number of Guests: ${rsvpData.numberOfGuests}`,
+    `Party Size: ${rsvpData.isAttending ? rsvpData.numberOfGuests + 1 : 0} (including ${rsvpData.name})`,
   ]
 
   if (rsvpData.dietaryRestrictions) {
