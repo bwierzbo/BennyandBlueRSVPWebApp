@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { HeroImage } from '@/components/ui'
-import { formatDate } from '@/lib/utils'
+import { formatDate, getRSVPDeadline } from '@/lib/utils'
 
 function SectionDivider() {
   return (
@@ -273,7 +273,7 @@ export default function Home() {
             Can&apos;t wait to celebrate with you!
           </h2>
           <p className="text-xl text-wedding-dustyPink-100 mb-8">
-            Please RSVP by July 1st, 2026
+            Please RSVP by {formatDate(getRSVPDeadline())}
           </p>
           <Link href="/rsvp">
             <Button
