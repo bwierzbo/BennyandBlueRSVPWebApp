@@ -189,6 +189,7 @@ export async function submitRSVP(formData: FormData): Promise<ValidationResult<{
         email: validatedData.email,
         isAttending: validatedData.attendance === "yes",
         numberOfGuests: validatedData.numberOfGuests || 0,
+        guestNames: validatedData.guestNames,
         dietaryRestrictions: validatedData.dietaryRestrictions,
       })
     } catch (notifyError) {
@@ -293,6 +294,7 @@ export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResu
         email: validatedData.email,
         isAttending: validatedData.attendance === "yes",
         numberOfGuests: validatedData.numberOfGuests || 0,
+        guestNames: validatedData.guestNames,
         dietaryRestrictions: validatedData.dietaryRestrictions,
       })
     } catch (notifyError) {

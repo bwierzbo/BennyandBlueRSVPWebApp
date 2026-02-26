@@ -121,6 +121,7 @@ export async function sendAdminNotification(rsvpData: {
   email: string
   isAttending: boolean
   numberOfGuests: number
+  guestNames?: string[]
   dietaryRestrictions?: string
 }) {
   // Check if Resend API key is configured
@@ -152,6 +153,10 @@ export async function sendAdminNotification(rsvpData: {
     `Attending: ${attendingText}`,
     `Party Size: ${rsvpData.isAttending ? rsvpData.numberOfGuests + 1 : 0} (including ${rsvpData.name})`,
   ]
+
+  if (rsvpData.guestNames && rsvpData.guestNames.length > 0) {
+    bodyLines.push(`Guest Names: ${rsvpData.guestNames.join(', ')}`)
+  }
 
   if (rsvpData.dietaryRestrictions) {
     bodyLines.push(`Dietary Restrictions: ${rsvpData.dietaryRestrictions}`)
