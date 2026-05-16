@@ -31,3 +31,16 @@ export function getRSVPDeadline(): Date {
 export function isRSVPOpen(): boolean {
   return new Date() <= getRSVPDeadline()
 }
+
+/**
+ * Sum total party size across RSVPs. Mirrors the DB stats query:
+ * each attending RSVP contributes `numberOfGuests + 1` (primary + additional).
+ */
+export function calculateTotalGuests(
+  rsvps: Array<{ isAttending: boolean; numberOfGuests: number }>
+): number {
+  return rsvps.reduce(
+    (sum, r) => (r.isAttending ? sum + r.numberOfGuests + 1 : sum),
+    0
+  )
+}

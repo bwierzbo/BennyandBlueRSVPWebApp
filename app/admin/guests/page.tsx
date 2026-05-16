@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { rsvpDb } from '@/lib/db'
-import type { RSVP, RSVPStats } from '@/types'
+import type { RSVPStats } from '@/types'
 import { SummaryStats } from '@/components/admin/summary-stats'
-import { RSVPCard } from '@/components/admin/rsvp-card'
+import { SearchableGuestList } from '@/components/admin/searchable-guest-list'
 import { ExportRSVPButton } from '@/components/admin/export-rsvp-button'
 import { AdminPageSkeleton } from '@/components/admin/loading-skeleton'
 
@@ -26,30 +26,16 @@ async function GuestList() {
       rsvpDb.getStats()
     ])
 
+    const typedStats = stats as RSVPStats
     return (
       <div>
-        <SummaryStats stats={stats as RSVPStats} className="mb-8" />
+        <SummaryStats stats={typedStats} className="mb-8" />
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              All RSVP Submissions ({rsvps.length})
-            </h2>
-            <ExportRSVPButton rsvps={rsvps} />
-          </div>
-
-          {rsvps.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400">No RSVP submissions yet.</p>
-            </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-1">
-              {rsvps.map((rsvp) => (
-                <RSVPCard key={rsvp.id} rsvp={rsvp} />
-              ))}
-            </div>
-          )}
-        </div>
+        <SearchableGuestList
+          rsvps={rsvps}
+          totalGuests={Number(typedStats.total_guests)}
+          actions={<ExportRSVPButton rsvps={rsvps} />}
+        />
       </div>
     )
   } catch (error) {
