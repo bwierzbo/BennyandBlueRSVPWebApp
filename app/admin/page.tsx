@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { rsvpDb } from '@/lib/db'
 import { AdminPageSkeleton } from '@/components/admin/loading-skeleton'
 import { TestEmailButton } from '@/components/admin/test-email-button'
+import { EmailGuestListButton } from '@/components/admin/email-guest-list-button'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard - Benny & Blue Wedding',
@@ -150,8 +151,11 @@ async function DashboardContent() {
           </div>
         )}
 
-        {/* Test Email Button */}
-        <TestEmailButton />
+        {/* Email utilities */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <TestEmailButton />
+          <EmailGuestListButton />
+        </div>
 
         {/* Quick Links Grid */}
         <div>

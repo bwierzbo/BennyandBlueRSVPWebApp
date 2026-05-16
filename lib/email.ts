@@ -2,6 +2,7 @@ import { Resend } from 'resend'
 import { render } from '@react-email/render'
 import RSVPConfirmationEmail from '@/emails/rsvp-confirmation'
 import type { RSVPFormData } from './validations'
+import { renderGuestListHtml, type GuestListRsvp } from './guest-list-html'
 
 // Initialize Resend with API key
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -197,4 +198,29 @@ export function rsvpFormDataToEmailParams(
     songRequests: data.songRequests,
     notes: data.notes,
   }
+}
+
+/**
+ * Send a simplified guest list to any email address (admin-only utility).
+ */
+export async function sendGuestListEmail(params: {
+  recipientEmail: string
+  rsvps: GuestListRsvp[]
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('RESEND_API_KEY not configured. Skipping guest list send.')
+    return {
+      success: false,
+      error: 'Email service not configured',
+    }
+  }
+
+  const { html, totalGuests, partyCount } = renderGuestListHtml(params.rsvps)
+
+  return await sendWithRetry({
+    from: 'Kourtney & Benjamin <onboarding@resend.dev>',
+    to: [params.recipientEmail],
+    subject: `Wedding Guest List - ${totalGuests} guest${totalGuests === 1 ? '' : 's'} (${partyCount} part${partyCount === 1 ? 'y' : 'ies'})`,
+    html,
+  })
 }
