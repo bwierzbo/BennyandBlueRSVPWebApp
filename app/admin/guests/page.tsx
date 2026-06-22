@@ -4,6 +4,7 @@ import { rsvpDb } from '@/lib/db'
 import type { RSVP, RSVPStats } from '@/types'
 import { SummaryStats } from '@/components/admin/summary-stats'
 import { RSVPCard } from '@/components/admin/rsvp-card'
+import { ExportRSVPButton } from '@/components/admin/export-rsvp-button'
 import { AdminPageSkeleton } from '@/components/admin/loading-skeleton'
 
 export const metadata: Metadata = {
@@ -30,9 +31,12 @@ async function GuestList() {
         <SummaryStats stats={stats as RSVPStats} className="mb-8" />
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            All RSVP Submissions ({rsvps.length})
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              All RSVP Submissions ({rsvps.length})
+            </h2>
+            <ExportRSVPButton rsvps={rsvps} />
+          </div>
 
           {rsvps.length === 0 ? (
             <div className="text-center py-8">
