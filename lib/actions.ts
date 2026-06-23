@@ -14,7 +14,6 @@ import { enhanceErrorMessages, ERROR_MESSAGES } from "./error-messages"
 import { rsvpDb } from "./db"
 import type { RSVPCreateData } from "../types"
 import { sendRSVPConfirmation, sendAdminNotification, rsvpFormDataToEmailParams } from "./email"
-import { isRSVPOpen, getRSVPDeadline, formatDate } from "./utils"
 
 // Database functions
 async function checkEmailExists(email: string, excludeId?: string): Promise<boolean> {
@@ -121,13 +120,6 @@ function extractGuestNames(formData: FormData): string[] {
 // Server action to submit RSVP
 export async function submitRSVP(formData: FormData): Promise<ValidationResult<{ id: number } | undefined>> {
   try {
-    // Check RSVP deadline
-    if (!isRSVPOpen()) {
-      return createServerValidationResult(undefined, [
-        createServerValidationError("_form", `RSVPs closed on ${formatDate(getRSVPDeadline())}. Please contact us directly if you need to respond.`)
-      ])
-    }
-
     // Extract guest names from FormData
     const guestNames = extractGuestNames(formData)
 
@@ -243,13 +235,6 @@ export async function submitRSVPAndRedirect(formData: FormData): Promise<never> 
 // Server action to submit RSVP with JSON data and redirect on success
 export async function submitRSVPJSON(data: RSVPFormData): Promise<ValidationResult<{ id: number } | undefined> | never> {
   try {
-    // Check RSVP deadline
-    if (!isRSVPOpen()) {
-      return createServerValidationResult(undefined, [
-        createServerValidationError("_form", `RSVPs closed on ${formatDate(getRSVPDeadline())}. Please contact us directly if you need to respond.`)
-      ])
-    }
-
     // Validate the form data
     const validation = await validateCompleteRSVP(data)
     if (!validation.success) {

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { HeroImage } from '@/components/ui'
-import { formatDate, getRSVPDeadline } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 
 function SectionDivider() {
   return (
@@ -269,12 +269,9 @@ export default function Home() {
       <div className="bg-wedding-dustyPink-600 dark:bg-wedding-dustyPink-800 py-8 md:py-16 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.6),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(240,200,170,0.45),transparent_40%)]" aria-hidden />
         <div className="container mx-auto px-4 text-center relative">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white mb-8">
             Can&apos;t wait to celebrate with you!
           </h2>
-          <p className="text-xl text-wedding-dustyPink-100 mb-8">
-            Please RSVP by {formatDate(getRSVPDeadline())}
-          </p>
           <Link href="/rsvp">
             <Button
               size="lg"
