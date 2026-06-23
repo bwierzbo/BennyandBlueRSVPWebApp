@@ -341,11 +341,83 @@ export async function validateEmailUniqueness(email: string): Promise<Validation
     }
 
     return createServerValidationResult(true)
-
   } catch (error) {
     console.error("Email validation error:", error)
     return createServerValidationResult(undefined, [
       createServerValidationError("email", "Unable to validate email at this time")
+    ])
+  }
+}
+
+// Server action to update an RSVP from the admin page.
+// Accepts any subset of editable fields; validates and enforces email uniqueness.
+export async function updateRSVPAction(
+  id: number,
+  data: {
+    name?: string
+    email?: string
+    isAttending?: boolean
+    numberOfGuests?: number
+    guestNames?: string[]
+    dietaryRestrictions?: string | null
+    songRequests?: string | null
+    notes?: string | null
+  }
+): Promise<ValidationResult<{ id: number } | undefined>> {
+  try {
+    if (!Number.isFinite(id) || id <= 0) {
+      return createServerValidationResult(undefined, [
+        createServerValidationError("_form", "Invalid RSVP id"),
+      ])
+    }
+
+    // If email is being changed, validate format and uniqueness against other rows.
+    let normalizedEmail: string | undefined
+    if (data.email !== undefined) {
+      const emailValidation = await validateEmail({ email: data.email })
+      if (!emailValidation.success) {
+        return createServerValidationResult(undefined, emailValidation.errors)
+      }
+      normalizedEmail = emailValidation.data!.email
+      const existing = await rsvpDb.getByEmail(normalizedEmail)
+      if (existing && existing.id !== id) {
+        return createServerValidationResult(undefined, [
+          createServerValidationError("email", ERROR_MESSAGES.EMAIL_ALREADY_EXISTS),
+        ])
+      }
+    }
+
+    const updated = await rsvpDb.update(id, {
+      name: data.name,
+      email: normalizedEmail,
+      isAttending: data.isAttending,
+      numberOfGuests: data.numberOfGuests,
+      guestNames: data.guestNames,
+      dietaryRestrictions: data.dietaryRestrictions ?? undefined,
+      songRequests: data.songRequests ?? undefined,
+      notes: data.notes ?? undefined,
+    })
+
+    if (!updated) {
+      return createServerValidationResult(undefined, [
+        createServerValidationError("_form", "RSVP not found"),
+      ])
+    }
+
+    revalidatePath("/admin")
+    revalidatePath("/admin/guests")
+    revalidatePath("/admin/dietary")
+    revalidatePath("/admin/songs")
+
+    return createServerValidationResult({ id: updated.id })
+  } catch (error) {
+    console.error("Error updating RSVP:", error)
+    const message =
+      error instanceof Error && (error.message.includes("Invalid guest names") || error.message.includes("Invalid guest count"))
+        ? error.message
+        : "Failed to update RSVP"
+    return createServerValidationResult(undefined, [
+      createServerValidationError("_form", message),
     ])
   }
 }

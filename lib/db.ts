@@ -395,6 +395,10 @@ export const rsvpDb = {
         setClauses.push(`name = $${paramCounter++}`);
         values.push(updateData.name);
       }
+      if (updateData.email !== undefined) {
+        setClauses.push(`email = $${paramCounter++}`);
+        values.push(updateData.email);
+      }
       if (updateData.isAttending !== undefined) {
         setClauses.push(`is_attending = $${paramCounter++}`);
         values.push(updateData.isAttending);

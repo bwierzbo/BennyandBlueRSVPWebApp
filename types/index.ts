@@ -30,6 +30,7 @@ export interface RSVPCreateData {
 // RSVP data for updates (partial input format)
 export interface RSVPUpdateData {
   name?: string;
+  email?: string;
   isAttending?: boolean;
   numberOfGuests?: number;
   guestNames?: string[];

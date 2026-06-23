@@ -1,7 +1,12 @@
+"use client"
+
+import { useState } from 'react'
 import type { RSVP } from '@/types'
 import { StatusBadge } from './status-badge'
 import { GuestList } from './guest-list'
 import { DeleteRSVPButton } from './delete-rsvp-button'
+import { EditRSVPForm } from './edit-rsvp-form'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface RSVPCardProps {
@@ -10,6 +15,7 @@ interface RSVPCardProps {
 }
 
 export function RSVPCard({ rsvp, className }: RSVPCardProps) {
+  const [isEditing, setIsEditing] = useState(false)
   // Check if this is a recent submission (within last 24 hours)
   const isRecent = Date.now() - new Date(rsvp.createdAt).getTime() < 24 * 60 * 60 * 1000
 
@@ -46,10 +52,25 @@ export function RSVPCard({ rsvp, className }: RSVPCardProps) {
               })}
             </time>
           </div>
-          <DeleteRSVPButton rsvpId={rsvp.id} rsvpName={rsvp.name} />
+          {!isEditing && (
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                Edit
+              </Button>
+              <DeleteRSVPButton rsvpId={rsvp.id} rsvpName={rsvp.name} />
+            </div>
+          )}
         </div>
       </div>
 
+      {isEditing ? (
+        <EditRSVPForm
+          rsvp={rsvp}
+          onCancel={() => setIsEditing(false)}
+          onSaved={() => setIsEditing(false)}
+        />
+      ) : (
+      <>
       {/* Contact and guest information */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
@@ -102,6 +123,8 @@ export function RSVPCard({ rsvp, className }: RSVPCardProps) {
             &ldquo;{rsvp.notes}&rdquo;
           </p>
         </div>
+      )}
+      </>
       )}
     </div>
   )
