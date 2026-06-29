@@ -65,10 +65,6 @@ export default function RSVPConfirmationEmail({
                   <strong>🎉 Reception:</strong> 7:00 PM - 11:00 PM at Olympic Bluffs Lavender Shop
                 </Text>
 
-                <Text style={eventText}>
-                  <strong>🥞 Brunch:</strong> August 23, 2026 at 11:00 AM (Location TBD)
-                </Text>
-
                 <Hr style={hr} />
 
                 <Text style={eventText}>
