@@ -3,6 +3,7 @@ import { render } from '@react-email/render'
 import RSVPConfirmationEmail from '@/emails/rsvp-confirmation'
 import type { RSVPFormData } from './validations'
 import { renderGuestListHtml, type GuestListRsvp } from './guest-list-html'
+import { renderMassEmailHtml } from './mass-email-html'
 
 // Initialize Resend with API key
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -223,4 +224,53 @@ export async function sendGuestListEmail(params: {
     subject: `Wedding Guest List - ${totalGuests} guest${totalGuests === 1 ? '' : 's'} (${partyCount} part${partyCount === 1 ? 'y' : 'ies'})`,
     html,
   })
+}
+
+/**
+ * Send the same email to a list of recipients, one at a time to preserve privacy.
+ * Returns per-recipient success/failure info.
+ */
+export async function sendMassEmail(params: {
+  recipients: string[]
+  subject: string
+  bodyText: string
+}): Promise<{
+  attempted: number
+  succeeded: number
+  failed: number
+  failures: Array<{ email: string; error: string }>
+}> {
+  if (!process.env.RESEND_API_KEY) {
+    return {
+      attempted: params.recipients.length,
+      succeeded: 0,
+      failed: params.recipients.length,
+      failures: params.recipients.map(email => ({ email, error: 'Email service not configured' })),
+    }
+  }
+
+  const html = renderMassEmailHtml(params.bodyText)
+  const failures: Array<{ email: string; error: string }> = []
+  let succeeded = 0
+
+  for (const email of params.recipients) {
+    const result = await sendWithRetry({
+      from: 'Kourtney & Benjamin <onboarding@resend.dev>',
+      to: [email],
+      subject: params.subject,
+      html,
+    })
+    if (result.success) {
+      succeeded++
+    } else {
+      failures.push({ email, error: result.error ?? 'Unknown error' })
+    }
+  }
+
+  return {
+    attempted: params.recipients.length,
+    succeeded,
+    failed: failures.length,
+    failures,
+  }
 }

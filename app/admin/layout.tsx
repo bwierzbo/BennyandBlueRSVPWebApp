@@ -67,6 +67,12 @@ export default function AdminLayout({
             >
               Song Requests
             </Link>
+            <Link
+              href="/admin/email"
+              className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              Send Email
+            </Link>
           </div>
         </div>
       </nav>
