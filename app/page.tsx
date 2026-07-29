@@ -99,6 +99,14 @@ export default function Home() {
                   Travel & Accommodations
                 </Button>
               </Link>
+              <a href="#faq">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093M12 17h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Dress Code & FAQ
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -205,8 +213,161 @@ export default function Home() {
 
       <SectionDivider />
 
+      {/* Frequently Asked Questions */}
+      <div id="faq" className="scroll-mt-16 bg-gradient-to-br from-wedding-dustyPink-50/60 via-white to-wedding-lavender-50/60 dark:from-gray-900 dark:via-gray-800 dark:to-gray-800 py-8 md:py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-center text-gray-900 dark:text-white mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-center text-gray-600 dark:text-gray-300 mb-10">
+              A few things guests have been asking about.
+            </p>
+
+            <div className="space-y-4">
+              {/* Dress Code — highlighted since it's the most-asked question */}
+              <details
+                open
+                className="group rounded-lg border border-wedding-roseGold-200 dark:border-wedding-roseGold-400/40 bg-white dark:bg-gray-800 shadow-sm overflow-hidden"
+              >
+                <summary className="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-4 bg-wedding-roseGold-50 dark:bg-wedding-roseGold-900/20 hover:bg-wedding-roseGold-100/70 dark:hover:bg-wedding-roseGold-900/30 transition-colors">
+                  <span className="flex items-center gap-3">
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-wedding-roseGold-500 text-white text-sm font-semibold">
+                      ★
+                    </span>
+                    <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                      What&apos;s the dress code?
+                    </span>
+                  </span>
+                  <svg
+                    className="h-5 w-5 shrink-0 text-gray-500 transition-transform group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 py-4 text-gray-700 dark:text-gray-200 leading-relaxed space-y-3">
+                  <p>
+                    <strong>Garden party / semi-formal.</strong> Think sundresses, linen suits, or dressy separates —
+                    a step up from casual, but nothing black tie.
+                  </p>
+                  <p>
+                    One small request: please leave white and ivory to the bride.
+                  </p>
+                </div>
+              </details>
+
+              {/* Outdoor venue */}
+              <details className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+                <summary className="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+                  <span className="text-base font-semibold text-gray-900 dark:text-white">
+                    Is the wedding outdoors?
+                  </span>
+                  <svg
+                    className="h-5 w-5 shrink-0 text-gray-500 transition-transform group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 py-4 text-gray-700 dark:text-gray-200 leading-relaxed">
+                  <p>
+                    Yes — both the ceremony and the reception are outdoors on the lavender farm and cidery grounds.
+                    Late August in Port Angeles is usually mild, but evenings can cool off, so a light layer for later
+                    isn&apos;t a bad idea.
+                  </p>
+                </div>
+              </details>
+
+              {/* Parking */}
+              <details className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+                <summary className="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+                  <span className="text-base font-semibold text-gray-900 dark:text-white">
+                    Where do I park?
+                  </span>
+                  <svg
+                    className="h-5 w-5 shrink-0 text-gray-500 transition-transform group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 py-4 text-gray-700 dark:text-gray-200 leading-relaxed">
+                  <p>Free parking is available at the venue.</p>
+                </div>
+              </details>
+
+              {/* Gifts / Registry */}
+              <details className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+                <summary className="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+                  <span className="text-base font-semibold text-gray-900 dark:text-white">
+                    Are you registered anywhere?
+                  </span>
+                  <svg
+                    className="h-5 w-5 shrink-0 text-gray-500 transition-transform group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 py-4 text-gray-700 dark:text-gray-200 leading-relaxed">
+                  <p>
+                    Yes — we&apos;ve set up a Honeyfund registry. Scroll down to the{' '}
+                    <a href="#registry" className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400 underline">
+                      Registry section
+                    </a>{' '}
+                    for the link. Your presence is our greatest gift, so please don&apos;t feel obligated.
+                  </p>
+                </div>
+              </details>
+
+              {/* Travel */}
+              <details className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+                <summary className="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+                  <span className="text-base font-semibold text-gray-900 dark:text-white">
+                    Where should I stay?
+                  </span>
+                  <svg
+                    className="h-5 w-5 shrink-0 text-gray-500 transition-transform group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 py-4 text-gray-700 dark:text-gray-200 leading-relaxed">
+                  <p>
+                    Take a look at our{' '}
+                    <Link href="/travel" className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400 underline">
+                      Travel &amp; Accommodations
+                    </Link>{' '}
+                    page for lodging recommendations and travel tips.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <SectionDivider />
+
       {/* Registry Information Section */}
-      <div className="bg-gradient-to-br from-wedding-lavender-50 to-wedding-dustyPink-50 dark:from-gray-800 dark:to-gray-700 py-8 md:py-12 relative overflow-hidden">
+      <div id="registry" className="scroll-mt-16 bg-gradient-to-br from-wedding-lavender-50 to-wedding-dustyPink-50 dark:from-gray-800 dark:to-gray-700 py-8 md:py-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\"160\" height=\"160\" viewBox=\"0 0 160 160\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cdefs%3E%3Cfilter id=\"noise\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"4\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3C/defs%3E%3Crect width=\"160\" height=\"160\" filter=\"url(%23noise)\" opacity=\"0.16\"/%3E%3C/svg%3E"' }} aria-hidden />
         <div className="container mx-auto px-4 relative">
           <div className="max-w-3xl mx-auto text-center">
