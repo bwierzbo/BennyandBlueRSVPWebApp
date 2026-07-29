@@ -8,6 +8,9 @@ import { renderMassEmailHtml } from './mass-email-html'
 // Initialize Resend with API key
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+// Sender address on the Resend-verified domain
+const FROM_ADDRESS = 'Kourtney & Benjamin <rsvp@confirmation.bennyandblue.com>'
+
 // Retry configuration
 const MAX_ATTEMPTS = 2
 const RETRY_DELAY_MS = 2000
@@ -97,7 +100,7 @@ export async function sendRSVPConfirmation(params: SendRSVPConfirmationParams) {
     }))
 
     return await sendWithRetry({
-      from: 'Kourtney & Benjamin <onboarding@resend.dev>', // Change this after domain verification
+      from: FROM_ADDRESS,
       to: [params.email],
       subject: params.isAttending
         ? "We can't wait to see you at our wedding! \u{1F495}"
@@ -168,7 +171,7 @@ export async function sendAdminNotification(rsvpData: {
 
   try {
     return await sendWithRetry({
-      from: 'Kourtney & Benjamin <onboarding@resend.dev>',
+      from: FROM_ADDRESS,
       to: [notificationEmail],
       subject,
       html: htmlBody,
@@ -219,7 +222,7 @@ export async function sendGuestListEmail(params: {
   const { html, totalGuests, partyCount } = renderGuestListHtml(params.rsvps)
 
   return await sendWithRetry({
-    from: 'Kourtney & Benjamin <onboarding@resend.dev>',
+    from: FROM_ADDRESS,
     to: [params.recipientEmail],
     subject: `Wedding Guest List - ${totalGuests} guest${totalGuests === 1 ? '' : 's'} (${partyCount} part${partyCount === 1 ? 'y' : 'ies'})`,
     html,
