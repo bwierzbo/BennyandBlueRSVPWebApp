@@ -258,7 +258,7 @@ export async function sendMassEmail(params: {
 
   for (const email of params.recipients) {
     const result = await sendWithRetry({
-      from: 'Kourtney & Benjamin <onboarding@resend.dev>',
+      from: FROM_ADDRESS,
       to: [email],
       subject: params.subject,
       html,
