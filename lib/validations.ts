@@ -110,12 +110,27 @@ export const emailValidationSchema = z.object({
   email: emailSchema,
 });
 
+// Seating table schema (admin seating chart)
+export const seatingTableSchema = z.object({
+  name: z
+    .string()
+    .max(100, "Table name must be 100 characters or less")
+    .transform(val => val.trim())
+    .refine(val => val.length > 0, "Table name is required"),
+  capacity: z
+    .number()
+    .int("Capacity must be a whole number")
+    .min(1, "Capacity must be at least 1")
+    .max(50, "Capacity cannot exceed 50 seats"),
+});
+
 // Type inference from schemas
 export type RSVPFormData = z.infer<typeof rsvpFormSchema>;
 export type GuestData = z.infer<typeof guestSchema>;
 export type GuestNamesData = z.infer<typeof guestNamesSchema>;
 export type CompleteRSVPData = z.infer<typeof completeRSVPSchema>;
 export type EmailValidationData = z.infer<typeof emailValidationSchema>;
+export type SeatingTableFormData = z.infer<typeof seatingTableSchema>;
 
 // Validation error types
 export interface ValidationError {

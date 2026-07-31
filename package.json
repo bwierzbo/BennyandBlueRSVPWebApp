@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit",
     "db:init": "npx tsx scripts/init-db.ts",
     "db:test": "npx tsx scripts/test-db.ts",
+    "db:seating": "npx tsx scripts/add-seating-tables.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

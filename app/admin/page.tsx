@@ -162,7 +162,7 @@ async function DashboardContent() {
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Quick Access
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Guest List */}
             <Link href="/admin/guests">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-blue-500">
@@ -184,6 +184,31 @@ async function DashboardContent() {
                     {rsvps.length}
                   </span>
                   <span className="text-sm text-gray-500">RSVPs</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* Seating Chart */}
+            <Link href="/admin/seating">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 dark:border-gray-700 hover:border-green-500">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg mr-3">
+                    <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Seating Chart
+                  </h4>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                  Group guests and plus-ones onto tables
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {stats.total_guests}
+                  </span>
+                  <span className="text-sm text-gray-500">To seat</span>
                 </div>
               </div>
             </Link>

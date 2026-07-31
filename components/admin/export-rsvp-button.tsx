@@ -1,20 +1,11 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { escapeCsvValue } from '@/lib/utils'
 import type { RSVP } from '@/types'
 
 interface ExportRSVPButtonProps {
   rsvps: RSVP[]
-}
-
-// Escape a value for safe inclusion in a CSV cell
-function escapeCsvValue(value: string): string {
-  // Wrap in quotes and double any embedded quotes if the value contains
-  // a comma, quote, or newline
-  if (/[",\n\r]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`
-  }
-  return value
 }
 
 function formatDate(date: Date): string {

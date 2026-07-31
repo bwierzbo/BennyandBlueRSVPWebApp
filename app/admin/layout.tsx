@@ -56,6 +56,12 @@ export default function AdminLayout({
               Guest List
             </Link>
             <Link
+              href="/admin/seating"
+              className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+            >
+              Seating Chart
+            </Link>
+            <Link
               href="/admin/dietary"
               className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
             >

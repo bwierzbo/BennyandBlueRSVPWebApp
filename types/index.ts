@@ -97,6 +97,83 @@ export interface AdminRSVPStats extends RSVPStats {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Seating chart
+// ---------------------------------------------------------------------------
+
+// Database record for a seating table (snake_case)
+export interface SeatingTableRecord {
+  id: number;
+  name: string;
+  capacity: number;
+  sort_order: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+// Seating table in API format (camelCase)
+export interface SeatingTable {
+  id: number;
+  name: string;
+  capacity: number;
+  sortOrder: number;
+}
+
+// Database record for a single person's table assignment (snake_case)
+export interface SeatingAssignmentRecord {
+  person_id: string;
+  rsvp_id: number;
+  seat_index: number;
+  table_id: number;
+}
+
+// personId -> tableId. The working format used by the planner UI.
+export type SeatingAssignmentMap = Record<string, number>;
+
+// A single attendee derived from an RSVP: either the person who submitted it
+// (seatIndex 0) or one of their plus-ones (seatIndex 1..numberOfGuests).
+export interface SeatingPerson {
+  personId: string;
+  rsvpId: number;
+  seatIndex: number;
+  name: string;
+  isPrimary: boolean;
+  // false when the plus-one was never named and we show a placeholder
+  isNamed: boolean;
+  partyName: string;
+  dietaryRestrictions: string | null;
+}
+
+// Everyone from one RSVP, kept together so parties can be seated as a unit
+export interface SeatingParty {
+  rsvpId: number;
+  name: string;
+  email: string;
+  size: number;
+  people: SeatingPerson[];
+  dietaryRestrictions: string | null;
+  notes: string | null;
+}
+
+export interface SeatingTableWithPeople extends SeatingTable {
+  people: SeatingPerson[];
+  seatsUsed: number;
+  seatsLeft: number;
+  isOverCapacity: boolean;
+  partyCount: number;
+}
+
+export interface SeatingPlan {
+  tables: SeatingTableWithPeople[];
+  // Parties with at least one unseated person; `people` holds only the
+  // unseated members, while `size` remains the full party size.
+  unseatedParties: SeatingParty[];
+  totalAttendees: number;
+  seatedCount: number;
+  unseatedCount: number;
+  totalCapacity: number;
+}
+
 // Legacy Guest interface (kept for compatibility)
 export interface Guest {
   id: string;

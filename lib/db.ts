@@ -1,5 +1,15 @@
 import { sql } from '@vercel/postgres';
-import type { RSVPRecord, RSVP, RSVPCreateData, RSVPUpdateData, AdminRSVPData, AdminRSVPStats } from '../types';
+import type {
+  RSVPRecord,
+  RSVP,
+  RSVPCreateData,
+  RSVPUpdateData,
+  AdminRSVPData,
+  AdminRSVPStats,
+  SeatingTable,
+  SeatingTableRecord,
+  SeatingAssignmentMap
+} from '../types';
 import { performanceMonitor, measurePerformance, PERFORMANCE_TARGETS } from './performance';
 
 // Guest names validation utilities
@@ -172,6 +182,17 @@ export const formatConverters = {
   }
 };
 
+// Seating chart format converters
+export const seatingConverters = {
+  // Convert seating table record (snake_case) to API format (camelCase)
+  tableDbToApi: (record: SeatingTableRecord): SeatingTable => ({
+    id: record.id,
+    name: record.name,
+    capacity: Number(record.capacity),
+    sortOrder: Number(record.sort_order)
+  })
+};
+
 // Database connection configuration
 export const db = {
   // Execute a query and return results
@@ -261,10 +282,75 @@ export const db = {
         EXECUTE FUNCTION update_updated_at_column()
       `;
 
+      // Seating chart tables
+      await db.initializeSeatingTables();
+
       console.log('Database tables initialized successfully');
     } catch (error) {
       console.error('Error initializing database tables:', error);
       throw new Error(`Failed to initialize database tables: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Create the seating chart tables. Safe to run repeatedly.
+  initializeSeatingTables: async (): Promise<void> => {
+    try {
+      await sql`
+        CREATE TABLE IF NOT EXISTS seating_table (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR(100) NOT NULL,
+          capacity INTEGER NOT NULL DEFAULT 8 CHECK (capacity > 0),
+          sort_order INTEGER NOT NULL DEFAULT 0,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+
+      // One row per seated person. person_id is `<rsvpId>-<seatIndex>`, which
+      // makes a person's table assignment unique by construction.
+      await sql`
+        CREATE TABLE IF NOT EXISTS seating_assignment (
+          person_id VARCHAR(64) PRIMARY KEY,
+          rsvp_id INTEGER NOT NULL REFERENCES rsvp(id) ON DELETE CASCADE,
+          seat_index INTEGER NOT NULL CHECK (seat_index >= 0),
+          table_id INTEGER NOT NULL REFERENCES seating_table(id) ON DELETE CASCADE,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_seating_assignment_table ON seating_assignment(table_id)
+      `;
+
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_seating_assignment_rsvp ON seating_assignment(rsvp_id)
+      `;
+
+      await sql`
+        DROP TRIGGER IF EXISTS update_seating_table_updated_at ON seating_table
+      `;
+
+      await sql`
+        CREATE TRIGGER update_seating_table_updated_at
+        BEFORE UPDATE ON seating_table
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column()
+      `;
+
+      await sql`
+        DROP TRIGGER IF EXISTS update_seating_assignment_updated_at ON seating_assignment
+      `;
+
+      await sql`
+        CREATE TRIGGER update_seating_assignment_updated_at
+        BEFORE UPDATE ON seating_assignment
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column()
+      `;
+    } catch (error) {
+      console.error('Error initializing seating tables:', error);
+      throw new Error(`Failed to initialize seating tables: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 };
@@ -651,6 +737,181 @@ export const rsvpDb = {
       throw new Error(`Failed to fetch admin statistics: ${error instanceof Error ? error.message : 'Database error'}`);
     }
   })
+};
+
+// Seating chart database operations
+export const seatingDb = {
+  // Get all tables in display order
+  getTables: async (): Promise<SeatingTable[]> => {
+    try {
+      const result = await sql`
+        SELECT * FROM seating_table ORDER BY sort_order ASC, id ASC
+      `;
+      return result.rows.map((row) => seatingConverters.tableDbToApi(row as SeatingTableRecord));
+    } catch (error) {
+      console.error('Error fetching seating tables:', error);
+      throw new Error(`Failed to fetch seating tables: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Get all assignments as a personId -> tableId map
+  getAssignments: async (): Promise<SeatingAssignmentMap> => {
+    try {
+      const result = await sql`
+        SELECT person_id, table_id FROM seating_assignment
+      `;
+      const assignments: SeatingAssignmentMap = {};
+      for (const row of result.rows) {
+        assignments[row.person_id as string] = Number(row.table_id);
+      }
+      return assignments;
+    } catch (error) {
+      console.error('Error fetching seating assignments:', error);
+      throw new Error(`Failed to fetch seating assignments: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Drop assignments for people who no longer exist: guests whose RSVP flipped
+  // to not attending, or plus-ones removed by shrinking the party size.
+  // (Deleted RSVPs are handled by the ON DELETE CASCADE foreign key.)
+  pruneStaleAssignments: async (): Promise<number> => {
+    try {
+      const result = await sql`
+        DELETE FROM seating_assignment sa
+        USING rsvp r
+        WHERE sa.rsvp_id = r.id
+          AND (r.is_attending = false OR sa.seat_index > r.number_of_guests)
+      `;
+      return result.rowCount || 0;
+    } catch (error) {
+      console.error('Error pruning stale seating assignments:', error);
+      throw new Error(`Failed to prune seating assignments: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Create a table, appending it to the end of the display order
+  createTable: async (name: string, capacity: number): Promise<SeatingTable> => {
+    try {
+      const result = await sql`
+        INSERT INTO seating_table (name, capacity, sort_order)
+        VALUES (
+          ${name},
+          ${capacity},
+          COALESCE((SELECT MAX(sort_order) + 1 FROM seating_table), 0)
+        )
+        RETURNING *
+      `;
+      return seatingConverters.tableDbToApi(result.rows[0] as SeatingTableRecord);
+    } catch (error) {
+      console.error('Error creating seating table:', error);
+      throw new Error(`Failed to create seating table: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Rename a table and/or change its capacity
+  updateTable: async (
+    id: number,
+    updates: { name?: string; capacity?: number }
+  ): Promise<SeatingTable | null> => {
+    try {
+      const setClauses: string[] = [];
+      const values: any[] = [];
+      let paramCounter = 1;
+
+      if (updates.name !== undefined) {
+        setClauses.push(`name = $${paramCounter++}`);
+        values.push(updates.name);
+      }
+      if (updates.capacity !== undefined) {
+        setClauses.push(`capacity = $${paramCounter++}`);
+        values.push(updates.capacity);
+      }
+
+      if (setClauses.length === 0) {
+        throw new Error('No fields to update');
+      }
+
+      values.push(id);
+      const result = await db.query(
+        `UPDATE seating_table SET ${setClauses.join(', ')} WHERE id = $${paramCounter} RETURNING *`,
+        values
+      );
+
+      const record = result.rows[0] as SeatingTableRecord | undefined;
+      return record ? seatingConverters.tableDbToApi(record) : null;
+    } catch (error) {
+      console.error('Error updating seating table:', error);
+      throw new Error(`Failed to update seating table: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Delete a table. Its assignments are removed by the cascading foreign key,
+  // which returns everyone seated there to the unseated list.
+  deleteTable: async (id: number): Promise<boolean> => {
+    try {
+      const result = await sql`
+        DELETE FROM seating_table WHERE id = ${id} RETURNING id
+      `;
+      return result.rows.length > 0;
+    } catch (error) {
+      console.error('Error deleting seating table:', error);
+      throw new Error(`Failed to delete seating table: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Seat people at a table. Anyone already seated elsewhere is moved.
+  assignPeople: async (
+    people: Array<{ personId: string; rsvpId: number; seatIndex: number }>,
+    tableId: number
+  ): Promise<void> => {
+    if (people.length === 0) {
+      return;
+    }
+
+    try {
+      const values: any[] = [];
+      const placeholders = people.map((person, index) => {
+        const base = index * 4;
+        values.push(person.personId, person.rsvpId, person.seatIndex, tableId);
+        return `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4})`;
+      });
+
+      await db.query(
+        `INSERT INTO seating_assignment (person_id, rsvp_id, seat_index, table_id)
+         VALUES ${placeholders.join(', ')}
+         ON CONFLICT (person_id)
+         DO UPDATE SET table_id = EXCLUDED.table_id, updated_at = CURRENT_TIMESTAMP`,
+        values
+      );
+    } catch (error) {
+      console.error('Error assigning seats:', error);
+      throw new Error(`Failed to assign seats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Return people to the unseated list
+  unassignPeople: async (personIds: string[]): Promise<void> => {
+    if (personIds.length === 0) {
+      return;
+    }
+
+    try {
+      await db.query(`DELETE FROM seating_assignment WHERE person_id = ANY($1::text[])`, [personIds]);
+    } catch (error) {
+      console.error('Error unassigning seats:', error);
+      throw new Error(`Failed to unassign seats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Remove every assignment, keeping the tables themselves
+  clearAllAssignments: async (): Promise<void> => {
+    try {
+      await sql`DELETE FROM seating_assignment`;
+    } catch (error) {
+      console.error('Error clearing seating assignments:', error);
+      throw new Error(`Failed to clear seating assignments: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
 };
 
 // Export the sql instance for direct queries if needed
