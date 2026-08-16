@@ -206,6 +206,33 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+
+              {/* Brunch */}
+              <div className="relative overflow-hidden bg-wedding-cream-200 dark:bg-gray-700 rounded-2xl border border-wedding-cream-400 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-wedding-cream-500">
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/50 via-transparent to-wedding-cream-200/70" />
+                <div className="relative h-40 sm:h-48 w-full">
+                  <Image
+                    src="/images/home-cidery-building.jpeg"
+                    alt="Olympic Bluffs Cidery building"
+                    fill
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                </div>
+                <div className="text-center p-4 sm:p-6">
+                  <h3 className="text-xl sm:text-2xl font-display font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+                    Brunch
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    August 23, 2026
+                  </p>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    11:00 AM
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Olympic Bluffs Cidery
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
