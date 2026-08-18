@@ -90,6 +90,14 @@ export default function Home() {
 
             {/* Quick Links */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href="/schedule">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Weekend Schedule
+                </Button>
+              </Link>
               <Link href="/travel">
                 <Button variant="outline" size="sm" className="w-full sm:w-auto">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -126,6 +134,33 @@ export default function Home() {
             </p>
 
             <div className="grid md:grid-cols-2 gap-6">
+              {/* Rehearsal Dinner */}
+              <div className="relative overflow-hidden bg-wedding-lavender-50 dark:bg-gray-700 rounded-2xl border border-wedding-lavender-200 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-wedding-lavender-300">
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/30 via-transparent to-wedding-lavender-100/30" />
+                <div className="relative h-40 sm:h-48 w-full">
+                  <Image
+                    src="/images/home-cidery-building.jpeg"
+                    alt="Olympic Bluffs Cidery building"
+                    fill
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                </div>
+                <div className="text-center p-4 sm:p-6">
+                  <h3 className="text-xl sm:text-2xl font-display font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
+                    Rehearsal Dinner
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    August 21, 2026
+                  </p>
+                  <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
+                    7:00 PM
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Olympic Bluffs Cidery — all guests welcome!
+                  </p>
+                </div>
+              </div>
+
               {/* Cocktail Hour */}
               <div className="relative overflow-hidden bg-wedding-roseGold-50 dark:bg-gray-700 rounded-2xl border border-wedding-roseGold-200 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-wedding-roseGold-300">
                 <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/20 via-transparent to-wedding-roseGold-100/30" />
@@ -145,7 +180,7 @@ export default function Home() {
                     {formatDate(weddingDate)}
                   </p>
                   <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                    5:00 PM
+                    4:30 PM
                   </p>
                   <p className="text-gray-600 dark:text-gray-300">
                     Olympic Bluffs Cidery
@@ -172,7 +207,7 @@ export default function Home() {
                     {formatDate(weddingDate)}
                   </p>
                   <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                    6:30 PM
+                    6:00 PM
                   </p>
                   <p className="text-gray-600 dark:text-gray-300">
                     Salt & Cedar Bed and Breakfast
@@ -199,7 +234,7 @@ export default function Home() {
                     {formatDate(weddingDate)}
                   </p>
                   <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">
-                    7:00 PM - 11:00 PM
+                    6:45 PM - 11:30 PM
                   </p>
                   <p className="text-gray-600 dark:text-gray-300">
                     Olympic Bluffs Lavender Shop
@@ -233,6 +268,15 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+            </div>
+
+            <div className="text-center mt-10">
+              <Link
+                href="/schedule"
+                className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400 underline decoration-wedding-roseGold-300 decoration-2 underline-offset-4"
+              >
+                View the full weekend schedule →
+              </Link>
             </div>
           </div>
         </div>
@@ -283,6 +327,38 @@ export default function Home() {
                   </p>
                   <p>
                     One small request: please leave white and ivory to the bride.
+                  </p>
+                </div>
+              </details>
+
+              {/* Rehearsal dinner & brunch */}
+              <details className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+                <summary className="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+                  <span className="text-base font-semibold text-gray-900 dark:text-white">
+                    Am I invited to the rehearsal dinner and brunch?
+                  </span>
+                  <svg
+                    className="h-5 w-5 shrink-0 text-gray-500 transition-transform group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 py-4 text-gray-700 dark:text-gray-200 leading-relaxed space-y-3">
+                  <p>
+                    Yes! All guests are welcome at both the rehearsal dinner (Friday, August 21 at 7:00 PM) and the
+                    farewell brunch (Sunday, August 23 at 11:00 AM), both at the Olympic Bluffs Cidery. Only the
+                    ceremony rehearsal itself, earlier Friday evening, is limited to the wedding party.
+                  </p>
+                  <p>
+                    Dress for both is come as you are — though most people are dressing somewhat nice. See the{' '}
+                    <Link href="/schedule" className="text-wedding-roseGold-600 dark:text-wedding-roseGold-400 underline">
+                      Weekend Schedule
+                    </Link>{' '}
+                    for full details.
                   </p>
                 </div>
               </details>

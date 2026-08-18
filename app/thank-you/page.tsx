@@ -49,9 +49,9 @@ function ThankYouContent() {
           </h2>
           <div className="space-y-3 text-gray-700 dark:text-gray-300">
             <p><strong>Date:</strong> August 22, 2026</p>
-            <p><strong>Cocktail Hour:</strong> 5:00 PM at Olympic Bluffs Cidery</p>
-            <p><strong>Ceremony:</strong> 6:30 PM at Salt & Cedar bed and breakfast</p>
-            <p><strong>Reception:</strong> 7:00 PM - 11:00 PM at Olympic Bluffs Lavender Shop</p>
+            <p><strong>Cocktail Hour:</strong> 4:30 PM at Olympic Bluffs Cidery</p>
+            <p><strong>Ceremony:</strong> 6:00 PM at Salt & Cedar bed and breakfast</p>
+            <p><strong>Reception:</strong> 6:45 PM - 11:30 PM at Olympic Bluffs Lavender Shop</p>
             <p className="pt-2"><strong>Venue:</strong> Olympic Bluffs Cidery & Lavender Farm<br />
             1025 Finn Hall Road, Port Angeles, WA 98362</p>
           </div>
@@ -87,6 +87,7 @@ function ThankYouContent() {
           </h2>
           <div className="space-y-3 text-left text-gray-700 dark:text-gray-300">
             <p>• Your RSVP has been saved to our database</p>
+            <p>• See the <a href="/schedule" className="text-wedding-dustyPink-600 dark:text-wedding-dustyPink-400 hover:underline">Weekend Schedule</a> for the full day-of timeline</p>
             <p>• Check the <a href="/travel" className="text-wedding-dustyPink-600 dark:text-wedding-dustyPink-400 hover:underline">Travel & Accommodations</a> page for venue details and lodging options</p>
             <p>• Feel free to reach out if you have any questions</p>
           </div>

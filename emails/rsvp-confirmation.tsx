@@ -54,15 +54,15 @@ export default function RSVPConfirmationEmail({
                 </Text>
 
                 <Text style={eventText}>
-                  <strong>🍹 Cocktail Hour:</strong> 5:00 PM at Olympic Bluffs Cidery
+                  <strong>🍹 Cocktail Hour:</strong> 4:30 PM at Olympic Bluffs Cidery
                 </Text>
 
                 <Text style={eventText}>
-                  <strong>💒 Ceremony:</strong> 6:30 PM at Salt & Cedar Bed and Breakfast
+                  <strong>💒 Ceremony:</strong> 6:00 PM at Salt & Cedar Bed and Breakfast
                 </Text>
 
                 <Text style={eventText}>
-                  <strong>🎉 Reception:</strong> 7:00 PM - 11:00 PM at Olympic Bluffs Lavender Shop
+                  <strong>🎉 Reception:</strong> 6:45 PM - 11:30 PM at Olympic Bluffs Lavender Shop
                 </Text>
 
                 <Hr style={hr} />
@@ -142,6 +142,12 @@ export default function RSVPConfirmationEmail({
             <Text style={text}>
               <Link href="https://bennyandbluersvp.vercel.app" style={link}>
                 Visit Wedding Website
+              </Link>
+            </Text>
+
+            <Text style={text}>
+              <Link href="https://bennyandbluersvp.vercel.app/schedule" style={link}>
+                Full Weekend Schedule
               </Link>
             </Text>
 
