@@ -140,19 +140,19 @@ export default function RSVPConfirmationEmail({
             </Text>
 
             <Text style={text}>
-              <Link href="https://bennyandbluersvp.vercel.app" style={link}>
+              <Link href="https://www.bennyandblue.com" style={link}>
                 Visit Wedding Website
               </Link>
             </Text>
 
             <Text style={text}>
-              <Link href="https://bennyandbluersvp.vercel.app/schedule" style={link}>
+              <Link href="https://www.bennyandblue.com/schedule" style={link}>
                 Full Weekend Schedule
               </Link>
             </Text>
 
             <Text style={text}>
-              <Link href="https://bennyandbluersvp.vercel.app/travel" style={link}>
+              <Link href="https://www.bennyandblue.com/travel" style={link}>
                 Travel & Accommodations
               </Link>
             </Text>
