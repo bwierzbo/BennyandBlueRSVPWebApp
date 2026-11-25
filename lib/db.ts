@@ -955,7 +955,7 @@ export const uploadConverters = {
   })
 };
 
-// Guest photo & video upload records (the files themselves live in R2)
+// Guest photo & video upload records (the files themselves live in Vercel Blob)
 export const uploadsDb = {
   // Record a finished upload. Recording the same key twice is a no-op.
   create: async (upload: GuestUploadCreateData): Promise<void> => {

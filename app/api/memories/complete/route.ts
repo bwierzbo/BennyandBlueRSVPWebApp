@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadsDb } from '@/lib/db'
 import { completeUploadSchema, isAllowedMediaType } from '@/lib/memories'
-import { headUpload, isR2Configured } from '@/lib/r2'
+import { headUpload, isBlobConfigured } from '@/lib/blob'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
@@ -26,15 +26,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!isR2Configured()) {
-      console.error('Memories upload completion requested but R2 environment variables are not set')
+    if (!isBlobConfigured()) {
+      console.error('Memories upload completion requested but BLOB_READ_WRITE_TOKEN is not set')
       return NextResponse.json(
         { error: 'Uploads are not available right now. Please try again later.' },
         { status: 503 }
       )
     }
 
-    // Trust R2, not the client, for what was actually stored
+    // Trust the Blob store, not the client, for what was actually stored
     const stored = await headUpload(parsed.data.key)
     if (!stored) {
       return NextResponse.json({ error: 'Upload not found' }, { status: 404 })

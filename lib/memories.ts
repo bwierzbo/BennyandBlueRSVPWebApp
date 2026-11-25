@@ -76,7 +76,7 @@ export function sanitizeFilename(filename: string): string {
   return `${stem.replace(/[.-]+$/, '') || DEFAULT_FILENAME}${extension}`
 }
 
-/** guests/<slugified-name-or-guest>/<YYYYMMDD>/<uuid>-<sanitized-filename> */
+/** Pathname in the Blob store: guests/<slugified-name-or-guest>/<YYYYMMDD>/<uuid>-<sanitized-filename> */
 export function buildUploadKey(
   guestName: string | undefined,
   filename: string,
@@ -168,7 +168,9 @@ export type UploadFileInput = z.infer<typeof uploadFileSchema>
 export type SignUploadsInput = z.infer<typeof signUploadsSchema>
 export type CompleteUploadInput = z.infer<typeof completeUploadSchema>
 
+// A single-use upload grant: the client token only allows writing this key,
+// with the content type and size that were validated when it was issued.
 export interface SignedUpload {
   key: string
-  url: string
+  token: string
 }

@@ -1,14 +1,13 @@
 import { NextRequest } from 'next/server'
 import { POST } from '../../app/api/memories/sign/route'
+import { getPayloadFromClientToken } from '@vercel/blob/client'
+import { UPLOAD_TOKEN_TTL_MS } from '../blob'
 import { isUploadKey } from '../memories'
 
-// Presigning is offline HMAC signing, so these tests exercise the real route
-// and the real AWS SDK with throwaway credentials. No network is involved.
-const R2_ENV = {
-  R2_ACCOUNT_ID: 'testaccount',
-  R2_ACCESS_KEY_ID: 'test-access-key-id',
-  R2_SECRET_ACCESS_KEY: 'test-secret-access-key',
-  R2_BUCKET: 'test-bucket',
+// Client tokens are signed locally with HMAC, so these tests exercise the real
+// route and the real Vercel Blob SDK with a throwaway token. No network is involved.
+const BLOB_ENV = {
+  BLOB_READ_WRITE_TOKEN: 'vercel_blob_rw_teststoreid_testsecret',
 }
 
 let ipCounter = 0
@@ -29,14 +28,15 @@ const validFile = { filename: 'IMG_0001.jpg', type: 'image/jpeg', size: 1234 }
 
 describe('POST /api/memories/sign', () => {
   beforeAll(() => {
-    Object.assign(process.env, R2_ENV)
+    Object.assign(process.env, BLOB_ENV)
   })
 
   afterAll(() => {
-    for (const name of Object.keys(R2_ENV)) delete process.env[name]
+    for (const name of Object.keys(BLOB_ENV)) delete process.env[name]
   })
 
-  it('returns one presigned R2 PUT URL per file with type and size signed', async () => {
+  it('returns one upload token per file, locked to its key, type and size', async () => {
+    const before = Date.now()
     const response = await POST(
       signRequest({
         name: 'Aunt Mary',
@@ -50,23 +50,29 @@ describe('POST /api/memories/sign', () => {
     expect(data.uploads).toHaveLength(2)
 
     const today = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-    data.uploads.forEach((upload: { key: string; url: string }, index: number) => {
+    const expected = [
+      { suffix: '-IMG_0001.jpg', type: 'image/jpeg', size: 1234 },
+      { suffix: '-clip.mov', type: 'video/quicktime', size: 9_999 },
+    ]
+    data.uploads.forEach((upload: { key: string; token: string }, index: number) => {
       expect(isUploadKey(upload.key)).toBe(true)
       expect(upload.key.startsWith(`guests/aunt-mary/${today}/`)).toBe(true)
+      expect(upload.key.endsWith(expected[index].suffix)).toBe(true)
 
-      const url = new URL(upload.url)
-      expect(url.protocol).toBe('https:')
-      expect(url.host).toBe('test-bucket.testaccount.r2.cloudflarestorage.com')
-      expect(decodeURIComponent(url.pathname)).toBe(`/${upload.key}`)
-      expect(url.searchParams.get('X-Amz-Expires')).toBe('3600')
-      expect(url.searchParams.get('X-Amz-Credential')).toContain('/auto/s3/aws4_request')
-      // Content-Type and Content-Length must be signed so R2 enforces them
-      const signedHeaders = url.searchParams.get('X-Amz-SignedHeaders')!.split(';')
-      expect(signedHeaders).toEqual(expect.arrayContaining(['content-length', 'content-type', 'host']))
-      // Nothing a browser cannot send (e.g. SDK checksums) may be required
-      expect(signedHeaders.filter((h) => !['content-length', 'content-type', 'host'].includes(h))).toEqual([])
-      expect([...url.searchParams.keys()].filter((k) => /checksum/i.test(k))).toEqual([])
-      expect(index === 0 ? upload.key.endsWith('-IMG_0001.jpg') : upload.key.endsWith('-clip.mov')).toBe(true)
+      expect(upload.token.startsWith('vercel_blob_client_teststoreid_')).toBe(true)
+      const payload = getPayloadFromClientToken(upload.token)
+      console.log('token payload:', payload)
+      // The token must not be usable for any other object, type or size
+      expect(payload.pathname).toBe(upload.key)
+      expect(payload.allowedContentTypes).toEqual([expected[index].type])
+      expect(payload.maximumSizeInBytes).toBe(expected[index].size)
+      expect(payload.addRandomSuffix).toBe(false)
+      expect(payload.allowOverwrite).toBe(false)
+      expect(payload.validUntil).toBeGreaterThanOrEqual(before + UPLOAD_TOKEN_TTL_MS)
+      expect(payload.validUntil).toBeLessThanOrEqual(Date.now() + UPLOAD_TOKEN_TTL_MS)
+      // The read-write token itself must never reach the browser
+      expect(upload.token).not.toContain('testsecret')
+      expect(Buffer.from(upload.token.split('_').pop()!, 'base64').toString()).not.toContain('testsecret')
     })
 
     expect(data.uploads[0].key).not.toBe(data.uploads[1].key)
@@ -112,15 +118,15 @@ describe('POST /api/memories/sign', () => {
   })
 })
 
-describe('POST /api/memories/sign without R2 configured', () => {
+describe('POST /api/memories/sign without Blob storage configured', () => {
   it('returns 503 instead of throwing', async () => {
-    const saved = process.env.R2_BUCKET
-    delete process.env.R2_BUCKET
+    const saved = process.env.BLOB_READ_WRITE_TOKEN
+    delete process.env.BLOB_READ_WRITE_TOKEN
     try {
       const response = await POST(signRequest({ files: [validFile] }))
       expect(response.status).toBe(503)
     } finally {
-      if (saved !== undefined) process.env.R2_BUCKET = saved
+      if (saved !== undefined) process.env.BLOB_READ_WRITE_TOKEN = saved
     }
   })
 })

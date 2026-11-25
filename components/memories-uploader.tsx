@@ -16,8 +16,11 @@ import {
 } from "@/lib/memories"
 
 const CONCURRENT_UPLOADS = 3
-// Presigned URLs last an hour; re-sign anything that waited in the queue longer than this
-const SIGNED_URL_FRESH_MS = 50 * 60 * 1000
+// Upload tokens last six hours; re-sign anything that waited in the queue longer
+// than this so even a slow multi-GB upload starts with hours of validity left
+const UPLOAD_TOKEN_FRESH_MS = 60 * 60 * 1000
+// Larger files go up in parts, so a dropped connection retries a part, not the file
+const MULTIPART_THRESHOLD_BYTES = 32 * 1024 * 1024
 
 type UploadStatus = "queued" | "uploading" | "done" | "error"
 
@@ -63,7 +66,7 @@ export function MemoriesUploader() {
   const tickets = useRef(new Map<string, UploadTicket>())
   const queue = useRef<UploadItem[]>([])
   const activeCount = useRef(0)
-  const requests = useRef(new Set<XMLHttpRequest>())
+  const requests = useRef(new Set<AbortController>())
   const isMounted = useRef(true)
 
   useEffect(() => {
@@ -78,7 +81,7 @@ export function MemoriesUploader() {
     return () => {
       isMounted.current = false
       pending.length = 0
-      inFlight.forEach((xhr) => xhr.abort())
+      inFlight.forEach((controller) => controller.abort())
       inFlight.clear()
     }
   }, [])
@@ -105,30 +108,27 @@ export function MemoriesUploader() {
   }, [])
 
   const putFile = useCallback(
-    (item: UploadItem, url: string) =>
-      new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest()
-        requests.current.add(xhr)
-        const finish = (error?: Error) => {
-          requests.current.delete(xhr)
-          if (error) reject(error)
-          else resolve()
-        }
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            updateItem(item.id, { progress: Math.round((event.loaded / event.total) * 100) })
-          }
-        }
-        xhr.onload = () =>
-          xhr.status >= 200 && xhr.status < 300
-            ? finish()
-            : finish(new Error(`Upload failed (${xhr.status}). Please retry.`))
-        xhr.onerror = () => finish(new Error("Connection lost. Please retry."))
-        xhr.onabort = () => finish(new Error("Upload cancelled."))
-        xhr.open("PUT", url)
-        xhr.setRequestHeader("Content-Type", item.contentType)
-        xhr.send(item.file)
-      }),
+    async (item: UploadItem, ticket: UploadTicket) => {
+      const controller = new AbortController()
+      requests.current.add(controller)
+      try {
+        // Loaded on first upload so guests who only watch the film don't pay for it
+        const { put } = await import("@vercel/blob/client")
+        await put(ticket.key, item.file, {
+          access: "private",
+          token: ticket.token,
+          contentType: item.contentType,
+          multipart: item.file.size > MULTIPART_THRESHOLD_BYTES,
+          abortSignal: controller.signal,
+          onUploadProgress: ({ percentage }) => updateItem(item.id, { progress: Math.round(percentage) }),
+        })
+      } catch (error) {
+        console.error("Upload to storage failed:", error)
+        throw new Error(controller.signal.aborted ? "Upload cancelled." : "Upload failed. Please retry.")
+      } finally {
+        requests.current.delete(controller)
+      }
+    },
     [updateItem]
   )
 
@@ -138,14 +138,14 @@ export function MemoriesUploader() {
         updateItem(item.id, { status: "uploading", error: undefined })
 
         let ticket = tickets.current.get(item.id)
-        if (!ticket || (!ticket.isStored && Date.now() - ticket.signedAt > SIGNED_URL_FRESH_MS)) {
+        if (!ticket || (!ticket.isStored && Date.now() - ticket.signedAt > UPLOAD_TOKEN_FRESH_MS)) {
           await signItems([item])
           ticket = tickets.current.get(item.id)!
         }
 
         // A retry after a failed "complete" call must not re-send the file
         if (!ticket.isStored) {
-          await putFile(item, ticket.url)
+          await putFile(item, ticket)
           ticket.isStored = true
         }
 

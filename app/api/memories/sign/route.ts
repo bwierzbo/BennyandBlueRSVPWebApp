@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { buildUploadKey, signUploadsSchema, type SignedUpload } from '@/lib/memories'
-import { isR2Configured, presignUpload } from '@/lib/r2'
+import { createUploadToken, isBlobConfigured } from '@/lib/blob'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!isR2Configured()) {
-      console.error('Memories upload requested but R2 environment variables are not set')
+    if (!isBlobConfigured()) {
+      console.error('Memories upload requested but BLOB_READ_WRITE_TOKEN is not set')
       return NextResponse.json(
         { error: 'Uploads are not available right now. Please try again later.' },
         { status: 503 }
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     const uploads: SignedUpload[] = await Promise.all(
       parsed.data.files.map(async (file) => {
         const key = buildUploadKey(parsed.data.name, file.filename, now, randomUUID())
-        return { key, url: await presignUpload(key, file.type, file.size) }
+        return { key, token: await createUploadToken(key, file.type, file.size) }
       })
     )
 

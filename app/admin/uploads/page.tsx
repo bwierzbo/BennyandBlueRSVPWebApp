@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { uploadsDb } from '@/lib/db'
 import { formatBytes, groupUploadsByGuest } from '@/lib/memories'
-import { isR2Configured, presignDownload } from '@/lib/r2'
+import { isBlobConfigured, presignDownloads } from '@/lib/blob'
 import { AdminPageSkeleton } from '@/components/admin/loading-skeleton'
 
 export const metadata: Metadata = {
@@ -23,17 +23,10 @@ async function UploadsList() {
     const groups = groupUploadsByGuest(uploads)
     const totalBytes = uploads.reduce((sum, upload) => sum + upload.sizeBytes, 0)
 
-    const canDownload = isR2Configured()
-    const downloadUrls = new Map<number, string>(
-      canDownload
-        ? await Promise.all(
-            uploads.map(
-              async (upload) =>
-                [upload.id, await presignDownload(upload.key, upload.filename)] as [number, string]
-            )
-          )
-        : []
-    )
+    const canDownload = isBlobConfigured()
+    const downloadUrls = canDownload
+      ? await presignDownloads(uploads.map((upload) => upload.key))
+      : new Map<string, string>()
 
     return (
       <div>
@@ -54,7 +47,7 @@ async function UploadsList() {
 
         {!canDownload && (
           <div className="mb-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 text-amber-800 dark:text-amber-200">
-            R2 environment variables are not set, so download links are unavailable. See MEMORIES_SETUP.md.
+            BLOB_READ_WRITE_TOKEN is not set, so download links are unavailable. See MEMORIES_SETUP.md.
           </div>
         )}
 
@@ -77,13 +70,15 @@ async function UploadsList() {
                 </div>
                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                   {group.uploads.map((upload) => {
-                    const downloadUrl = downloadUrls.get(upload.id)
+                    const downloadUrl = downloadUrls.get(upload.key)
                     return (
                       <li key={upload.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2">
                         <div className="min-w-0">
                           {downloadUrl ? (
                             <a
                               href={downloadUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="block truncate text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
                             >
                               {upload.filename}
@@ -146,7 +141,7 @@ export default function AdminUploadsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Guest Uploads</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Photos and videos shared from the memories page. Download links expire after 15 minutes; reload for fresh ones.
+          Photos and videos shared from the memories page. Links expire after 15 minutes; reload for fresh ones.
         </p>
       </div>
 

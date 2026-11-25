@@ -4,7 +4,7 @@
  * Migration script to add the guest_uploads table
  *
  * Records every photo/video a guest uploads from /memories (the files
- * themselves live in Cloudflare R2). Safe to run more than once.
+ * themselves live in Vercel Blob). Safe to run more than once.
  * Run with: npm run db:uploads
  */
 
