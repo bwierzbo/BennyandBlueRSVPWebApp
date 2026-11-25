@@ -12,10 +12,13 @@
     "db:test": "npx tsx scripts/test-db.ts",
     "db:seating": "npx tsx scripts/add-seating-tables.ts",
     "db:export-seating": "npx tsx scripts/export-seating.ts",
+    "db:uploads": "npx tsx scripts/add-guest-uploads-table.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1177.0",
+    "@aws-sdk/s3-request-presigner": "^3.1177.0",
     "@hookform/resolvers": "^5.2.2",
     "@react-email/components": "^1.0.1",
     "@react-email/render": "^2.0.0",
