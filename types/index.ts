@@ -174,6 +174,35 @@ export interface SeatingPlan {
   totalCapacity: number;
 }
 
+// ---------------------------------------------------------------------------
+// Guest photo & video uploads (/memories)
+// ---------------------------------------------------------------------------
+
+// Database record for an uploaded file (snake_case)
+export interface GuestUploadRecord {
+  id: number;
+  key: string;
+  guest_name: string | null;
+  filename: string;
+  content_type: string;
+  // BIGINT comes back from Postgres as a string
+  size_bytes: string | number;
+  created_at: Date;
+}
+
+// Uploaded file in API format (camelCase)
+export interface GuestUpload {
+  id: number;
+  key: string;
+  guestName: string | null;
+  filename: string;
+  contentType: string;
+  sizeBytes: number;
+  createdAt: Date;
+}
+
+export type GuestUploadCreateData = Omit<GuestUpload, 'id' | 'createdAt'>;
+
 // Legacy Guest interface (kept for compatibility)
 export interface Guest {
   id: string;

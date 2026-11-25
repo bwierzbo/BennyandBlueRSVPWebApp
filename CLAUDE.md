@@ -149,6 +149,8 @@ Located at `/admin` with subroutes:
 - `/admin/dietary` - Dietary restrictions view
 - `/admin/songs` - Song requests view
 
+**Guest Uploads** (`/admin/uploads`): lists photos/videos guests shared from `/memories`, grouped by guest, with short-lived presigned download links. Files live in a private Vercel Blob store (`lib/blob.ts`); rows in `guest_uploads` (`uploadsDb` in `lib/db.ts`); limits, key format and Zod schemas in `lib/memories.ts`. Setup: `MEMORIES_SETUP.md`.
+
 **Delete Functionality** (`components/admin/delete-rsvp-button.tsx`):
 - Client component with inline confirmation
 - Calls `deleteRSVP()` server action

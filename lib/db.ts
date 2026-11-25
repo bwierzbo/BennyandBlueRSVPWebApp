@@ -8,7 +8,10 @@ import type {
   AdminRSVPStats,
   SeatingTable,
   SeatingTableRecord,
-  SeatingAssignmentMap
+  SeatingAssignmentMap,
+  GuestUpload,
+  GuestUploadCreateData,
+  GuestUploadRecord
 } from '../types';
 import { performanceMonitor, measurePerformance, PERFORMANCE_TARGETS } from './performance';
 
@@ -351,6 +354,30 @@ export const db = {
     } catch (error) {
       console.error('Error initializing seating tables:', error);
       throw new Error(`Failed to initialize seating tables: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Create the guest uploads table. Safe to run repeatedly.
+  initializeUploadsTable: async (): Promise<void> => {
+    try {
+      await sql`
+        CREATE TABLE IF NOT EXISTS guest_uploads (
+          id SERIAL PRIMARY KEY,
+          key TEXT NOT NULL UNIQUE,
+          guest_name TEXT,
+          filename TEXT NOT NULL,
+          content_type TEXT NOT NULL,
+          size_bytes BIGINT NOT NULL CHECK (size_bytes >= 0),
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_guest_uploads_created_at ON guest_uploads(created_at DESC)
+      `;
+    } catch (error) {
+      console.error('Error initializing guest uploads table:', error);
+      throw new Error(`Failed to initialize guest uploads table: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 };
@@ -910,6 +937,50 @@ export const seatingDb = {
     } catch (error) {
       console.error('Error clearing seating assignments:', error);
       throw new Error(`Failed to clear seating assignments: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+};
+
+// Guest upload format converters
+export const uploadConverters = {
+  // Convert guest upload record (snake_case) to API format (camelCase)
+  dbToApi: (record: GuestUploadRecord): GuestUpload => ({
+    id: record.id,
+    key: record.key,
+    guestName: record.guest_name,
+    filename: record.filename,
+    contentType: record.content_type,
+    sizeBytes: Number(record.size_bytes),
+    createdAt: record.created_at
+  })
+};
+
+// Guest photo & video upload records (the files themselves live in Vercel Blob)
+export const uploadsDb = {
+  // Record a finished upload. Recording the same key twice is a no-op.
+  create: async (upload: GuestUploadCreateData): Promise<void> => {
+    try {
+      await sql`
+        INSERT INTO guest_uploads (key, guest_name, filename, content_type, size_bytes)
+        VALUES (${upload.key}, ${upload.guestName}, ${upload.filename}, ${upload.contentType}, ${upload.sizeBytes})
+        ON CONFLICT (key) DO NOTHING
+      `;
+    } catch (error) {
+      console.error('Error recording guest upload:', error);
+      throw new Error(`Failed to record guest upload: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+
+  // Get every upload, newest first
+  getAll: async (): Promise<GuestUpload[]> => {
+    try {
+      const result = await sql`
+        SELECT * FROM guest_uploads ORDER BY created_at DESC, id DESC
+      `;
+      return result.rows.map((row) => uploadConverters.dbToApi(row as GuestUploadRecord));
+    } catch (error) {
+      console.error('Error fetching guest uploads:', error);
+      throw new Error(`Failed to fetch guest uploads: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 };

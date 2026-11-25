@@ -32,6 +32,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# guest uploads fetched by npm run uploads:download
+/guest-media
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
